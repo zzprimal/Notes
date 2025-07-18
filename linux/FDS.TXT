@@ -1,0 +1,11 @@
+.3 main file descriptors are opened when we start a process, stdin, stdout, and stderr (fd 0, 1, 2 respectively), and the file these file descriptors refer to are unique for 
+each controlling terminal that is open, if we start 2 processes on the same controlling terminal they will both have file descriptors 0, 1, 2 refer to the same files (or file
+, they all point to /dev/pts/?)
+
+.Something interesting is that stdout is line buffered, but this only applies when printing to the terminal obviously, so if we use redirection it will actually use full
+buffering, to change this can use the stdbuf command to change how a commmand is buffered
+
+./dev/pts/? are all the slave end of a pseudoterminal and are character device files, meaning they are files that interact with certain drivers on the OS, in this case the
+drivers are called line discipline and are kinda like a filter that bytes have to go through before they reach the pty master and get ready for output on the terminal
+
+.1>&2 as you know maps stdout to stderr, but how this is done is by changing the stdout file descriptor to now point to the file that stderr is referring to

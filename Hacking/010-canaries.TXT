@@ -1,0 +1,15 @@
+For this ctf the source code has a format string vulnerability, and a buffer overflow vulnerability, and our goal is to gain access to a function that isnt called normally in
+the source code called hacked, we could do a normal buffer overflow and overwrite the return address with the start of the hacked function but there is a problem, canaries are
+activated and one is located inbetween the variable we are writing to (buffer) and the return address of the function we are currently in, and ontop of that a canary check is
+located before we return from the function we are currently in, so solving this ctf requires us to bypass canaries somehow. To do this we just have to overwrite the canary with
+the same value that it was before the buffer overflow when we do the buffer overflow, but another problem is that canary values are randomized during runtime so we have to 
+somehow leak the value of the canary during runtime aswell, but canaries obviously are located in the stack, and what is the best tool for leaking values on the stack? Thats
+right format string vulnerabilities, first we need to find where the canary is, to do this is pretty easy just by trial and error and seeing how many bytes writen causes a
+trigger in the canary (or can just leak all values on the stack and see which one looks like canary values the most, the least significant byte will be 0 and the rest will
+just be randomized hex so this value stands out a bit), then we find what argument of printf corrosponds to that canary, and boom we have leaked the canary (in my case was
+argument 23, so %23$p). Next is the buffer overflow, we just fill the buffer variable with random junk until the canary variable, then type in the canary value we just got,
+now we just need to overwrite the return address, the return address will just be located in main so we can also just use format strings to leak values of the stack till we
+find it (by comparing with an actual address we get from objdump or something like that), or just use gdb-pwndbg and seeing what the return value is by setting breakpoints,
+then filling the buffer with As and seeing the distance from the buffer and canaries to the return address by using x/100x $esp to print multiple elements off the stack
+(this is what i did), after that we just need to see the distance, in my case it was 12 bytes, add the 12 bytes of junk, then the return address of hacked, and we are done,
+we have successfully infiltrated the hacked function and that completes the overwriting of canaries.

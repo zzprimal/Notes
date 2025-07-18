@@ -1,0 +1,176 @@
+need to make sure Base64Decode return value is less than 0xc, need to make the auth function return the value 1 to get to the correct function, then i need to pass another 
+check/if statement in the correct function to get shell access
+
+0x811eb40 (input)
+0xffffdb5e (password)
+0x81209b8 (copied to input for "Base64Decode return value" bytes)
+
+auth return value depends on Base64Decode's return value
+
+Dump of assembler code for function auth:
+   0x0804929c <+0>:     push   ebp
+   0x0804929d <+1>:     mov    ebp,esp
+   0x0804929f <+3>:     sub    esp,0x28
+   0x080492a2 <+6>:     mov    eax,DWORD PTR [ebp+0x8] # argument into eax
+   0x080492a5 <+9>:     mov    DWORD PTR [esp+0x8],eax # argument into esp+0x8
+   0x080492a9 <+13>:    mov    DWORD PTR [esp+0x4],0x811eb40 # input into esp+0x4
+   0x080492b1 <+21>:    lea    eax,[ebp-0x14] 
+   0x080492b4 <+24>:    add    eax,0xc # eax <- ebp-0x08
+   0x080492b7 <+27>:    mov    DWORD PTR [esp],eax # [esp] <- ebp-0x08
+   0x080492ba <+30>:    call   0x8069660 <memcpy> # arg0: 8 byte buffer, arg1 input, arg2 auth arg aka Base64Decode's return value
+   0x080492bf <+35>:    mov    DWORD PTR [esp+0x4],0xc # calc_md5 arg1
+   0x080492c7 <+43>:    lea    eax,[ebp-0x14] # calc_md5 pointer arg0
+   0x080492ca <+46>:    mov    DWORD PTR [esp],eax # save  arg0
+   0x080492cd <+49>:    call   0x8049188 <calc_md5>
+   0x080492d2 <+54>:    mov    DWORD PTR [ebp-0xc],eax
+   0x080492d5 <+57>:    mov    eax,DWORD PTR [ebp-0xc]
+   0x080492d8 <+60>:    mov    DWORD PTR [esp+0x4],eax
+   0x080492dc <+64>:    mov    DWORD PTR [esp],0x80da677
+   0x080492e3 <+71>:    call   0x805b630 <printf> # prints hash for us
+   0x080492e8 <+76>:    mov    eax,DWORD PTR [ebp-0xc]
+   0x080492eb <+79>:    mov    DWORD PTR [esp+0x4],eax
+   0x080492ef <+83>:    mov    DWORD PTR [esp],0x80da684
+   0x080492f6 <+90>:    call   0x80482f0 # strcmp call, if hash f87cd601aa7fedca99018a8be88eda34 is equal to hash calculated in calc_md5 function then we get past
+   0x080492fb <+95>:    test   eax,eax # sets ZF = 1 if eax = 0, else ZF = 0, so need eax = 0 to get authorization
+   0x080492fd <+97>:    jne    0x8049306 <auth+106> # jump if ZF = 0
+   0x080492ff <+99>:    mov    eax,0x1
+   0x08049304 <+104>:   jmp    0x804930b <auth+111>
+   0x08049306 <+106>:   mov    eax,0x0
+   0x0804930b <+111>:   leave
+   0x0804930c <+112>:   ret
+
+auth compared md5 hash generated to hash "f87cd601aa7fedca99018a8be88eda34", if they're equal return 1, else return 0
+Base64Decode supplies argument to auth
+
+Dump of assembler code for function Base64Decode:
+   0x08049095 <+0>:     push   ebp
+   0x08049096 <+1>:     mov    ebp,esp
+   0x08049098 <+3>:     sub    esp,0x38
+   0x0804909b <+6>:     mov    eax,DWORD PTR [ebp+0x8]
+   0x0804909e <+9>:     mov    DWORD PTR [esp],eax
+   0x080490a1 <+12>:    call   0x8049009 <calcDecodeLength>
+   0x080490a6 <+17>:    mov    DWORD PTR [ebp-0xc],eax
+   0x080490a9 <+20>:    mov    DWORD PTR [ebp-0x10],0x0
+   0x080490b0 <+27>:    mov    eax,DWORD PTR [ebp-0xc]
+   0x080490b3 <+30>:    add    eax,0x1
+   0x080490b6 <+33>:    mov    DWORD PTR [esp],eax
+   0x080490b9 <+36>:    call   0x8066420 <malloc>
+   0x080490be <+41>:    mov    edx,eax
+   0x080490c0 <+43>:    mov    eax,DWORD PTR [ebp+0xc]
+   0x080490c3 <+46>:    mov    DWORD PTR [eax],edx
+   0x080490c5 <+48>:    mov    eax,DWORD PTR [ebp+0x8]
+   0x080490c8 <+51>:    mov    DWORD PTR [esp],eax
+   0x080490cb <+54>:    call   0x8068ea0 <strlen>
+   0x080490d0 <+59>:    mov    DWORD PTR [esp+0x8],0x80da64a
+   0x080490d8 <+67>:    mov    DWORD PTR [esp+0x4],eax
+   0x080490dc <+71>:    mov    eax,DWORD PTR [ebp+0x8]
+   0x080490df <+74>:    mov    DWORD PTR [esp],eax
+   0x080490e2 <+77>:    call   0x805d2f0 <fmemopen>
+   0x080490e7 <+82>:    mov    DWORD PTR [ebp-0x14],eax
+   0x080490ea <+85>:    call   0x804dbf0 <BIO_f_base64>
+   0x080490ef <+90>:    mov    DWORD PTR [esp],eax
+   0x080490f2 <+93>:    call   0x8049f30 <BIO_new>
+   0x080490f7 <+98>:    mov    DWORD PTR [ebp-0x18],eax
+   0x080490fa <+101>:   mov    DWORD PTR [esp+0x4],0x0
+   0x08049102 <+109>:   mov    eax,DWORD PTR [ebp-0x14]
+   0x08049105 <+112>:   mov    DWORD PTR [esp],eax
+   0x08049108 <+115>:   call   0x804b350 <BIO_new_fp>
+   0x0804910d <+120>:   mov    DWORD PTR [ebp-0x1c],eax
+   0x08049110 <+123>:   mov    eax,DWORD PTR [ebp-0x1c]
+   0x08049113 <+126>:   mov    DWORD PTR [esp+0x4],eax
+   0x08049117 <+130>:   mov    eax,DWORD PTR [ebp-0x18]
+   0x0804911a <+133>:   mov    DWORD PTR [esp],eax
+   0x0804911d <+136>:   call   0x804a8f0 <BIO_push>
+   0x08049122 <+141>:   mov    DWORD PTR [ebp-0x1c],eax
+   0x08049125 <+144>:   mov    DWORD PTR [esp+0x4],0x100
+   0x0804912d <+152>:   mov    eax,DWORD PTR [ebp-0x1c]
+   0x08049130 <+155>:   mov    DWORD PTR [esp],eax
+   0x08049133 <+158>:   call   0x804a0b0 <BIO_set_flags>
+   0x08049138 <+163>:   mov    eax,DWORD PTR [ebp+0x8]
+   0x0804913b <+166>:   mov    DWORD PTR [esp],eax
+   0x0804913e <+169>:   call   0x8068ea0 <strlen>
+   0x08049143 <+174>:   mov    edx,eax
+   0x08049145 <+176>:   mov    eax,DWORD PTR [ebp+0xc]
+   0x08049148 <+179>:   mov    eax,DWORD PTR [eax]
+   0x0804914a <+181>:   mov    DWORD PTR [esp+0x8],edx
+   0x0804914e <+185>:   mov    DWORD PTR [esp+0x4],eax
+   0x08049152 <+189>:   mov    eax,DWORD PTR [ebp-0x1c]
+   0x08049155 <+192>:   mov    DWORD PTR [esp],eax
+   0x08049158 <+195>:   call   0x804a120 <BIO_read>
+   0x0804915d <+200>:   mov    DWORD PTR [ebp-0x10],eax
+   0x08049160 <+203>:   mov    eax,DWORD PTR [ebp+0xc]
+   0x08049163 <+206>:   mov    edx,DWORD PTR [eax]
+   0x08049165 <+208>:   mov    eax,DWORD PTR [ebp-0x10]
+   0x08049168 <+211>:   add    eax,edx
+   0x0804916a <+213>:   mov    BYTE PTR [eax],0x0
+   0x0804916d <+216>:   mov    eax,DWORD PTR [ebp-0x1c]
+   0x08049170 <+219>:   mov    DWORD PTR [esp],eax
+   0x08049173 <+222>:   call   0x804aa60 <BIO_free_all>
+   0x08049178 <+227>:   mov    eax,DWORD PTR [ebp-0x14]
+   0x0804917b <+230>:   mov    DWORD PTR [esp],eax
+   0x0804917e <+233>:   call   0x805b870 <fclose>
+   0x08049183 <+238>:   mov    eax,DWORD PTR [ebp-0xc]
+   0x08049186 <+241>:   leave
+   0x08049187 <+242>:   ret
+
+md5 hash determines what auth returns (1 or 0, we want 1)
+
+Dump of assembler code for function calc_md5:
+   0x08049188 <+0>:     push   ebp
+   0x08049189 <+1>:     mov    ebp,esp
+   0x0804918b <+3>:     sub    esp,0x98
+   0x08049191 <+9>:     mov    DWORD PTR [esp],0x21
+   0x08049198 <+16>:    call   0x8066420 <malloc>
+   0x0804919d <+21>:    mov    DWORD PTR [ebp-0x10],eax
+   0x080491a0 <+24>:    lea    eax,[ebp-0x6c]
+   0x080491a3 <+27>:    mov    DWORD PTR [esp],eax
+   0x080491a6 <+30>:    call   0x8049730 <MD5_Init>
+   0x080491ab <+35>:    jmp    0x80491f9 <calc_md5+113>
+   0x080491ad <+37>:    cmp    DWORD PTR [ebp+0xc],0x200
+   0x080491b4 <+44>:    jle    0x80491d2 <calc_md5+74>
+   0x080491b6 <+46>:    mov    DWORD PTR [esp+0x8],0x200
+   0x080491be <+54>:    mov    eax,DWORD PTR [ebp+0x8]
+   0x080491c1 <+57>:    mov    DWORD PTR [esp+0x4],eax
+   0x080491c5 <+61>:    lea    eax,[ebp-0x6c]
+   0x080491c8 <+64>:    mov    DWORD PTR [esp],eax
+   0x080491cb <+67>:    call   0x8049430 <MD5_Update>
+   0x080491d0 <+72>:    jmp    0x80491eb <calc_md5+99>
+   0x080491d2 <+74>:    mov    eax,DWORD PTR [ebp+0xc]
+   0x080491d5 <+77>:    mov    DWORD PTR [esp+0x8],eax
+   0x080491d9 <+81>:    mov    eax,DWORD PTR [ebp+0x8]
+   0x080491dc <+84>:    mov    DWORD PTR [esp+0x4],eax
+   0x080491e0 <+88>:    lea    eax,[ebp-0x6c]
+   0x080491e3 <+91>:    mov    DWORD PTR [esp],eax
+   0x080491e6 <+94>:    call   0x8049430 <MD5_Update>
+   0x080491eb <+99>:    sub    DWORD PTR [ebp+0xc],0x200
+   0x080491f2 <+106>:   add    DWORD PTR [ebp+0x8],0x200
+   0x080491f9 <+113>:   cmp    DWORD PTR [ebp+0xc],0x0
+   0x080491fd <+117>:   jg     0x80491ad <calc_md5+37>
+   0x080491ff <+119>:   lea    eax,[ebp-0x6c]
+   0x08049202 <+122>:   mov    DWORD PTR [esp+0x4],eax
+   0x08049206 <+126>:   lea    eax,[ebp-0x7c]
+   0x08049209 <+129>:   mov    DWORD PTR [esp],eax
+   0x0804920c <+132>:   call   0x8049600 <MD5_Final>
+   0x08049211 <+137>:   mov    DWORD PTR [ebp-0xc],0x0
+   0x08049218 <+144>:   jmp    0x8049254 <calc_md5+204>
+   0x0804921a <+146>:   lea    edx,[ebp-0x7c]
+   0x0804921d <+149>:   mov    eax,DWORD PTR [ebp-0xc]
+   0x08049220 <+152>:   add    eax,edx
+   0x08049222 <+154>:   movzx  eax,BYTE PTR [eax]
+   0x08049225 <+157>:   movzx  eax,al
+   0x08049228 <+160>:   mov    edx,DWORD PTR [ebp-0xc]
+   0x0804922b <+163>:   add    edx,edx
+   0x0804922d <+165>:   mov    ecx,edx
+   0x0804922f <+167>:   mov    edx,DWORD PTR [ebp-0x10]
+   0x08049232 <+170>:   add    edx,ecx
+   0x08049234 <+172>:   mov    DWORD PTR [esp+0xc],eax
+   0x08049238 <+176>:   mov    DWORD PTR [esp+0x8],0x80da64c
+   0x08049240 <+184>:   mov    DWORD PTR [esp+0x4],0x20
+   0x08049248 <+192>:   mov    DWORD PTR [esp],edx
+   0x0804924b <+195>:   call   0x805b660 <snprintf>
+   0x08049250 <+200>:   add    DWORD PTR [ebp-0xc],0x1
+   0x08049254 <+204>:   cmp    DWORD PTR [ebp-0xc],0xf
+   0x08049258 <+208>:   jle    0x804921a <calc_md5+146>
+   0x0804925a <+210>:   mov    eax,DWORD PTR [ebp-0x10]
+   0x0804925d <+213>:   leave
+   0x0804925e <+214>:   ret

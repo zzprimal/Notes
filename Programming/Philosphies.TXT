@@ -1,0 +1,10 @@
+.have functions that are called propagate their errors to the main function and let the main function decide how to deal with the error, the main function will now what error
+it is and if an error has occurred via a -1 return value and the errno value respectively
+
+.try to initialize the stack variables you are going to use at the start of a function and only use global variables for commonly used values that feels dumb to put in an
+argument (an example would be a flags variable that is used to tell the program what flags the user set when executing the program)
+
+.its fine to have verbose and somewhat long variable names, they are much perferable to variable names that say to little, just don't make them to long
+
+.comments are only necessary if the code is confusing and what your doing is not clear, code should be self explanatory most of the time but in the case that its really
+hard to achieve self explanatory code adding comments is fine

@@ -1,0 +1,28 @@
+Encryption: Encrytion is a method to scramble data such that no third party can read it and the only way to read it and to scramble it is via the use of a key, Encryption is a
+2 way process meaning that once the data is scrambled (also called encrypted) there is a way to unscramble it (also called decrypted) which are both done by the owners of said
+key, encryption is meant so that 2 users (or maybe even more) can communicate over an unsecure channel without worry of a third party listening onto their communications and
+having their messages listened to by an unintended user, this process requires though that the users have access to the proper keys without any third party knowing which is 
+also a problem that needs to be solved for encryption to work.
+
+Hashing: Hashing is a method to scramble data so that noone can interrpret it but unlike encryption this process is only 1 way, so after data is hashed it can't be reversed to
+get back the original data, usually this is done on servers to turn passwords into ciphertext so that if a data leak happens actual passwords cannot be leaked and hackers won't
+just be able to use these leaked hashed passwords to access peoples accounts, the hacker would now have to find another password that hashes into that hashed password value and
+to do that the hacker would have to know the hashing algorithm and would also need alot of trial and error to find said password (which can be done via rainbow tables) since
+if lets say the hashing algorithm hashes to a 256 bit value theoretically the chances of getting the right hashed value would be 1 / 2^256 which is obviously insanely unlikely.
+
+Salting: Salting is a process that is used to make a hackers life more difficult when trying to guess the password of a users account, first a random amount and sequence of 
+characters is chosen (called a salt) and then those character are put on the left or the right side of a users unhashed password, then after that the user's password is hashed
+and stored on the server and the random characters (the salt) that were added are also stored on the server aswell. This makes it harder to get access to a users account for a
+number of reasons, if a hacker leaks the hashed password values that are stored on the server but not the salt this information is now completely useless and can't be used to
+reverse engineer a password that also hashes to that value since when the hacker enters a password the salt is added to it so a completely different hash value is generated 
+then what the hacker wants so now it is impossible for the hacker to predict the hash value. Lets say that the hacker manages to leak the salt of the account it is trying to 
+hack though and also where the salt is placed (which in itself makes the hacking process more difficult) so now the hacker is able to predict the hashed values for the 
+passwords they enter, but now they will have to create a rainbow table with this salt value added onto the password so they can get correct hash values (unless they already 
+have a rainbow table with this information which would be insanely unlikely since the salt is a string that contains a random amount and sequence of characters) which will
+add alot of time to the password cracking process now they have to rehash all password on a previous rainbow table with the salt added on, and the running time on this will
+be massive especially if the running time of the hashing algorithm is massive. This doesn't make it impossible for a hacker to get access to an account but it does make it much
+more unlikely and much more time consuming for a hacker to do so which might make them reconsider trying since the amount of time committed this would take just might not be 
+worth it and it might be better to attack more unsecure websites with a log on system.
+
+Rainbow tables: a table that contains a massive amount of words and their hashed value and is used by hackers to try and find a matching hashed password to the one on an account
+they are trying to get access to

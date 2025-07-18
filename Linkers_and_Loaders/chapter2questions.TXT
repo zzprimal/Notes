@@ -1,0 +1,71 @@
+1.)
+should note a couple of things about this question, first that instruction sizes are of 32 bit and are directly right of the addresses of each instruction, and that the
+address space here is 16 bits so we are working with a virtual address space of 32 bits (we will assume 32 bit since the textbook only specifies SPARC being a 64 bit or
+32 bit architechure)
+
+1a.)
+note how the call instruction works, it takes the 30 bit offset, shifts it to the left by 2, then adds it to the current instruction address (so we are using address
+relocation to calculate an absolute address, and that absolute address will be our base location for the function)
+
+CALL X:
+we have instruction encoding being 40 00 03 00 and address being 1000 zero extending this gives us 0x00001000. Converting our instruction encoding from hex to pure binary we
+get 0100 0000 0000 0000 0000 0011 0000 0000, the first 2 binary digits of our instruction encoding is our op code which would be 01 so we get offset being
+00 0000 0000 0000 0000 0011 0000 0000 and left shifted by 2 would be 0000 0000 0000 0000 0000 1100 0000 0000 = 0x00000C00 add this to our instruction 0x00001000 we get
+0x00000C00 + 0x00001000 = 0x00001C00 is the location of X, the answers for CALL Y and CALL Z will be the exact same process as this so those answers will be less verbose
+and will just show the mathematical work to arrive at the answer
+
+CALL Y:
+instruction encoding is 7F FF FE ED = 0111 1111 1111 1111 1111 1110 1110 1101, address is 1008 = 0x00001008, offset is 0011 1111 1111 1111 1111 1110 1110 1101 shifted left by 2
+is 1111 1111 1111 1111 1111 1011 1011 0100 = 0xFFFFFBB4 => 0x00001008 + 0xFFFFFBB4 = 0x00000BBC (there is overflow here so i might be misunderstanding something but i have 
+no idea what that is)
+
+CALL Z:
+instruction encoding is 40 00 00 02 = 0100 0000 0000 0000 0000 0000 0000 0010, address is 1008 = 0x00001010, offset is 0000 0000 0000 0000 0000 0000 0000 0010 shifted left by 2
+is 0000 0000 0000 0000 0000 0000 0000 1000 = 0x00000008 => 0x00000008 + 0x00001010 = 0x00001018
+
+1b.)
+the address calculated in 1a for the CALL Z instruction gives us an address 0x00001018 which is the address of the instruction SETHI r1,3648367. This instruction is 2 instructions
+ahead of the CALL Z instruction and the instruction inbetween these 2 instructions is a NOP instruction so what this instruction will accomplish is absolutely nothing assuming
+call in this ISA doesn't change the stack (which it probably does do)
+
+1c.)
+So the  SETHI r1,3648367 loads the low 22 bits into the high 22 bits of register 1 and zeros out the rest, the instruction encoding of this instruction is 03 37 AB 6F
+= 0000 0011 0011 0111 1010 1011 0110 1111 and the low 22 bits are 11 0111 1010 1011 0110 1111 (which is 3648367 like in the instruction), so we have r1 being after this
+instruction 1101 1110 1010 1101 1011 1100 0000 0000, looking at the next instruction we have ORI r1,r1,751 which has encoding 82 10 62 EF = 1000 0010 0001 0000 0110 0010 1110 1111
+, lower 13 bits is 0 0010 1110 1111 (751 like in the instruction), oring this with our previous result for r1 we get 1101 1110 1010 1101 1011 1110 1110 1111
+= 0xDEADBEEF
+
+1d.)
+We need that ? + 0x00001000 = 0x00002504 => ? = 0x00002504 - 0x00001000 = 0x00001504 this result comes from shifting the offset in the instruction twice to the left, 
+so to reverse this operation we need to shift it by the right two times now so we get 0x00001504 => 0x00000541 is our new offset value in our CALL X instruction, so we get
+for the final value for our instruction encoding being 0x40000541 where the added 4 now comes from the addition of an opcode.
+
+2a.)
+For this question i will assume the maximum amount of bits for the offset, in this case the instruction encoding for CALL A is E8 12 34 00 00 so the opcode is E8 and the
+offset is 12 34 00 00, we add this to 10 05 (the encoding for the next instruction) and we get 0x12340000 + 0x00001005 = 0x12341005 is our answer for the address for A
+assuming my interpretation for instruction encoding and how the CALL instruction is encoded is correct, for MOV %EAX,P we have encoding A1 12 34 00 00, A1 is our opcode
+
+3.)
+No it doesn't, if for some instruction encoding the offset or the part that is responsible for the addressing is located in the same part of the instruction for example
+at the byte boundary then there is no need to understand every instruction, if new instructions are added to the ISA then the linker only needs to understand these instructions
+iff they don't follow the pattern previously mentioned, linkers don't really need to understand new addressing modes if there exists other addressing modes that can be used
+for the instruction since the linker can adjust these instructions so that they use the old addressing mode (this is also assuming that compilers and assemblers don't use
+this addressing mode either when producing object code, if they do the answer for this question would not be correct and would be the opposite infact)
+
+5.)
+The only challenge would be writing the linker code to account for different instruction formats in the different architectures and also identify when your working for a 
+different architecture, other than that i think this should be fine
+
+
+
+
+
+
+
+
+
+
+
+
+
+

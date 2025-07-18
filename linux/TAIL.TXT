@@ -1,0 +1,2 @@
+.the tail command seems to read until an EOF is encounterd, if specified with the -f option after the EOF is encountered it waits till reading returns non-EOF and once it
+does it reads till EOF and prints the result again on the screen

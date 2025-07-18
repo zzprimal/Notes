@@ -1,0 +1,3 @@
+. there are 3 ways to execute a command, that being "./", ". ", and "source " with ". " and "source " being equivalent, the "./" command will execute the second argument inside
+a completely new child shell with none of the parent shells variables (but since it is a child shell it will still inherit the environment variables of the parent), while the
+"source " and the ". " commands will execute the second argument in the current shell keeping the value of all variables declared in it

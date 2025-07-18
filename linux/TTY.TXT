@@ -1,0 +1,42 @@
+.TTY is just a synonym for the terminal and is just something that takes input from the user and gives output as a result
+
+.a terminal emulator is a simulation of a terminal implemented completely in software that is contained in the OS, instead of the level of abstraction that is provided in
+pseudo terminals (the process being connected to the pseudo master and then the slave and then the terminal) the process just connects directly to the terminal
+
+.A PTY is a terminal emulator aswell, but adds a level of abstraction (that being masters and slaves mentioned in the next point), this is so that the terminal is run with 
+only user level privilages, so that if something happens you don't brick your whole system and mess up something on the kernel level in your OS
+
+.A PTY has two sides called a master and a slave side, the master side contains the terminal emulator (or the tty) and the slave side contains the foreground process, and in
+between the 2 we have the tty driver which applies a protocal called line discipline, this protocal implements rules such that pressing enter clears the buffer inside the
+driver which sends the input to for forground process, or that certain key combinations send kill process signals, communication between the master and slave end is bidirectional
+so writing on any end sends that to the other end (though what you write will be filtered by line discipline so that is something to keep in mind)
+
+.When you start up a terminal this process is initially a shell which allows you to browse your system and do all kinds of things like start other processes, when you 
+start a different process your bash process will fork to that new process and the process which your terminal interacts with (aka the foreground process) becomes that new 
+process
+
+.A raw terminal is a pty with the major line displine commands disabled that affect the keystrokes the user gives as input and the output the pty slave gives, this is so that
+no changing of characters is done hence why its called raw
+
+.A cooked terminal is the complete opposite, cooked means it has all its default settings enables and your keystrokes are possibly changes when they arrived to the pty slave
+and vice versa aswell
+
+.You are able to manipulate your line displine protocal with the stty command in the shell, and in a C program you can use the termios library to do the same aswell using
+functions like the tcsetattr and tcgetattr to set and get your line discipline settings, you can also create a pty that will connect to a child process using the forkpty
+command aswell (in unistd.h im pretty sure)
+
+.Some noteable line discipline rules are as follows...
+
+ECHO: writing to pty master echoes those characters back
+
+ICRNL: translate carriage return to newline on input (enter and ^M are bound to carriage return for example and will be changed to newlines)
+
+ICANON: turns on canonical mode, meaning characters will be line buffered, turning this off will cause there to be no buffering with the characters you type in and
+everything you type will instantly be sent to the foreground process
+
+ISIG: allows sending of SIGINT and SIGSTOP signals, usually using ^C and ^Z, turning this off disallows this
+
+IXON: enable output control flow, enabled using ^S and disabled using ^Q
+
+OPOST: when a newline is printed to output (sent to ptm) it is translated to a carriage return followed by a newline (apparently this doesn't apply to the echo rule, only
+output that is printed by the foreground process)

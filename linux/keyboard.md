@@ -1,0 +1,8 @@
+# ScanCode
+A scancodes is the value that a key sends to your computer when you press down a key or release a key, scancodes can vary between keyboards. Example, when you press down the "a" key the scancode for the "a" key will be sent to your computer. Scancodes are further sperated into 2 subgroups, makecodes and breakcodes. Makecodes are sent to the computer on key press, while breakcodes are sent to the computer on key release. The actual scancodes sent from the keyboard to the computer are just hex values and the breakcode for a key release actually includes the makecode for the key press inside of it's breakcode. When you are pressing multiple keys (aka key combinations) nothing special happens, all that is sent is the individual makecodes for each key without the breakcodes of each individual key being sent inbetween.
+
+# KeyCode
+Keycodes are what scancodes get mapped to by the linux kernel and are sent to applications to tell the application what key has been pressed. You can check keycodes with the "showkey --keycodes" command or you can look at the "/usr/include/linux/input-event-codes.h" header file and keycodes for all keys will be located in all macros that start with "KEY_".
+
+# KeySym
+Another extra of redirection is done where the X window system maps the keycodes of specific keys into keysyms which are just variables (or macros not sure though, more likely to be macros) provided by the X window system in one of it's libraries. Which then clients can use for when the X server is alerting the client of an event that is occuring on it's screen.

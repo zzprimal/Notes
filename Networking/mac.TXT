@@ -1,0 +1,20 @@
+.mac addresses are permanent addresses that are binded to your network interface card, they are 48 bit numbers usually seperated by double colons where the first 24 bits specify
+a unique number called a OUI (organizationally unique identifier) that is unique to the manufacturer of the network interface card
+
+.they are necessary in the internet when traversing links so the recepient knows that a certain packet is meant for them since the destination ip address field will only contain
+the ip address of the server, or for a router to send a packet to a certain device on its local network since if we use private ip addresses and a different device took the ip
+address of the old device the other device will have recieved that packet instead since we use private ip addresses
+
+.in private networks that use nat they are necessary since they do not survive the first hop, lets say that in a private network packets sent from your computer has to go
+through a link layer switch and then it can arrive at the router, by the time the packet arrives at the link layer switch the source mac address will have been overwritten
+by the mac address of the link layer switch so the router will not be able to save the mac address of the computer since this will be wrong and will instead save the source
+ip address, and this is the reason we cannot implement private networks with just mac addresses, so how about if we implement private networks with just ip addresses, well if
+we did not use mac addresses the router would have no way of knowing that a packet is being addressed to themselves (note that the link and internet layer should be thought
+of as the following, upon a device recieving a packet they will look at the destination mac address, if it isn't their mac address they will discard, else they will process
+the packet whether that be unwrapping more layers or changing the mac addresses again and sending the packet down another link) and also ip addresses are dynamic so that might
+cause problems aswell (i have no idea what happens when a device sends out a packet but changes its private ip address during the downtime the packet is traveling to the server
+and a response packet is coming back, whatever the behavior is its probably best to avoid)
+
+(what is the point of both private ip addresses and mac addresses in a local network?? I can see why both ip addresses and mac addresses are necessary in the internet since
+ip address to see what link to forward to and mac addresses so the other side of the link can recieve but why in private?? Cant we just have source ip address empty and just
+send a packet to the router with just the source mac address filled out, then instead pat maps router ports to device ports and device mac addresses?)

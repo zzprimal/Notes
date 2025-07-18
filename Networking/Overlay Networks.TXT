@@ -1,0 +1,7 @@
+.An overlay network is a virtual network that uses physical networks to travel from one point to another, so an overlay network directly connects one host to another host using
+virtual links but in reality what is actually connecting these 2 hosts together are physical networks that use physical links and protocals at lower layers
+
+.A layer 2 network is a overlay network since it uses the underlying layer 1 infustructer to send its frames and relys on this infustructer, and the same can be said for layer
+3 networks for example where instead the underlying network would be layer 2 and layer 1 and this can be extended to layer i networks where i is an integer for a layer
+
+. The fabric is all the physical infustructer necessary for a virtual network to be able to function

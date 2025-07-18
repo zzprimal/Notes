@@ -1,0 +1,7 @@
+is the point where your computer interacts with the network it currently resides in, this term refers to the hardware side (network interface card, ethernet port, etc) and also
+the software side (stuff like reverting the layers of a packet that is recieved from the hardware side for example and sending to the right application)
+
+according to IBM a network interface is software that interacts with network device drivers and the internet layer and acts as an in between point for the 2 and adds layers
+and removes layers when giving a datagram (to the drivers) or a frame (to the internet layer) and possibly does other things aswell
+
+Note, this is all speculation and could be wrong

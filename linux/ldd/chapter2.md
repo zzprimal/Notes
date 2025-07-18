@@ -1,0 +1,3 @@
+- every module is linked with a vermagic.o object file during compilation to generate a .ko file, vermagic.o contains version info of the kernel this module was compiled with and what compiler was used and other info, this information is stored in the .modinfo section generated in the .ko elf file, this information is then checked during insmod to see if the module is compatable with the kernel you are trying to insert it into
+
+- exporting symboles in a modules source code causes extra sections in the elf file generated to be created, more specifically all the ksymtab modules which contain information about the exported symbols so they can be added to the kernels symbol table for other modules to use

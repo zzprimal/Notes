@@ -1,0 +1,3 @@
+.When searching on google and using wireshark during a search for the first time will cause a tcp connection to be initialized with a google server then you can find the exact
+get request that is used to fetch the html file for the search, subsequent google searches though i can't seem to find a http packet that is a get request and contains the
+path for the search? How does multiple searches work for google?

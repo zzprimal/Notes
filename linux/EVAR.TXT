@@ -1,0 +1,1 @@
+.environment variables are just regular bash variables that are set by the shell at startup im pretty sure

@@ -1,0 +1,25 @@
+. .git/HEAD contains a ref (a reference to a commit) which points to .git/refs/heads/<branch name> which is a file that contains the id of the current commit snapshot you are
+working with (note head in this case means a referance to a named branch)
+
+. .git/logs/HEAD contains details of your commit history with the commit ids and the commit messages (.git/logs/refs/heads/main contains the exact same information aswell)
+
+. a remote is just a binding of a cloud repository to a variable name, ex "git remote add origin https://github.com/zzprimal/myssh.git" binds origin to the url that specifies
+a cloud repository
+
+
+git fetch:
+updates your local repository with the commits of a remote repository and all the unrecorded history of commits in said remote repository (to use these repositories to 
+update your working directory you have to do a merge or a rebase to combine the 2 possible splitting branches)
+
+github actions workflow:
+a workflow defines a series of jobs to be performed once a certain action is taken (for example doing a push or pull to a branch), if a job fails then the workflow fails
+and the developer will be notified as such, this is useful for autamating testing for example so on every new commit to main you can have a default set of tests that every
+commit must pass for it to be allowed to be pushed to main, a github actions workflow is defined in a .yaml file which states what event triggers the workflow and what jobs
+to perform once that event has occured (note a github actions workflow is different from a git workflow which states the commit and branch strategy for a group of developers
+working together on a project)
+
+
+
+
+
+

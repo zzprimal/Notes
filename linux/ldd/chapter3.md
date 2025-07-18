@@ -1,0 +1,21 @@
+- When you are allocating minor numbers for your devices the register_chrdev_region function should be used which has the following function prototype...
+<center> int register_chrdev_region(dev_t first, unsigned int count, char *name); </center>
+where first is a device number that specifies the minimum device number you should start allocating from for minor numbers (the major number is the most significant part of the device number and the minor number is the least significant part), and count specifies the amount of minor numbers you want to allocate for a device, and name is just the name of the device (keep in mind if you specify a count that is to high the minor number can leak into the major number and cause an error, so keep count relatively low, keep in mind that the scheme for allocating minor numbers might have changed since kernel 2.6 so no idea if this is still the method for allocating minor numbers)
+
+- If you need to allocate major numbers aswell to get a major number for your driver you have to do so with...
+<center> int alloc_chrdev_region(dev_t *dev, unsigned int firstminor, unsigned int count, char *name); </center>
+Where dev is an output parameter, firstminor specifies the first minor number, and the rest is the same as the above function. Of course you can just use a static major number in your code but that comes at the risk of conflicts if in the future you do introduce more drivers into your system, and if your driver becomes more widely deployed this bad code decision will have more negative consequences aswell, so dynamic allocation is the better option.
+
+- /proc/devices contains the major numbers for drivers that are currently on your system, since it is impossible to pre-create device nodes for your driver during dynamic allocation of major numbers this can be used to create device nodes after you have loaded your driver by looking in this file for your driver's major number and give that to a device node you create via the mknod bash function
+
+- a cdev struct is used to represent a character device internally, one of these structs should be allocated on character device creation and registered using the cdev_add function which will register the device with the kernel, but keep in mind once you register a device that device is live and operations can be performed on that device by the kernel
+
+- the open system call is responsible for doing any initialization for the driver especially if this is the first open call for the device, an example in the case of the scull device is to trim the length of the device to 0 if the device is being opened for read only
+
+- the release system call is called once all file descriptors refering the device are closed and is responsible for the deallocation process of the device, an example of some deallocation that takes place is the freeing of the private_data field of the file structure associated to the device if that field was being used. Another question that needs to be answered is how is it known when all file descriptors associated to the device have been closed and release needs to be called, and the answer for that is simple in that a counter keeps track of how many open instances there are of the file/device and once that count hits 0 the release system call is called
+
+- memory is implemented in the scull device in just RAM by the driver so all the memory that is used to implement the functionality of the device is done via just allocating virtual memory, memory for scull from a programing pov is implemented via a linked list of arrays of pointers with each element of the linked list being called a quantum set and each pointer in the array being called a quantum, in the source code form the device quantum sets have 1000 quantums and each quantum has 4000 bytes though this can definitely be changed
+
+- read and write operation on the scull device can only operate on the quantum that those operations are refering to, to operate on more data another call must be made
+
+- output redirection in the shell calls open in write mode (sometimes a ioctl operation is added inbetween for some reason) then uses write to write to the file/device in question, release seems to only be called on the preceeding next open system call maybe? Im not sure why release is not called after the process ends

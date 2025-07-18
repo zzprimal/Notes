@@ -1,0 +1,6 @@
+we are given an executable that allows us to execute any command except it cant contain the strings flag, sh, and tmp which prevents us from refering to the flag for a cat,
+prevents us from calling an interactive shell to cat from there, and creating a temporary directory to do any symbolic link shenanigans or script shenanigans to get the flag,
+instead we can just use variables since it seems bash parses the input lines and replaces all instances of $<var> with the variables value (atleast bash seems to do this) so we
+can just export a new environment variable "export a=flag" then call cmd1 like follows "./cmd1 '/bin/cat $a'" where we have to specify the full path for cat since PATH is edited
+in the source code of cmd1, doing this we get the flag "mommy now I get what PATH environment is for :)" (didnt really teach me anything new about PATH so i have no idea
+what this was for, kinda like the passcode ctf in this sense)

@@ -1,0 +1,19 @@
+you can leak information on the stack using format string vulnerabilities, the conditions for this is that the first argument to a printf is a pointer that takes user input
+, for example...
+
+int main(){
+	char buff[200];
+	fgets(stdin, sizeof(buff), buff);
+	printf(buff);
+	return 0;
+}
+
+this code snippet gives you full control of what the first argument of the printf function is going to be, which means it also gives you control on the amount of arguments
+this printf call thinks its going to have, what i mean by this is that the amount of format specifiers you type in is equal to the amount of arguments the printf function
+thinks it has (minus the first argument), but in reality only 1 argument is given so this can be used to link the stack. On the assumption our program is 32 bit the format
+specifier %n$p allows us to print the nth word above the buff pointer argument above the stack, and using $s instead of $p allows us to print the string at that word as opposed
+to the word itself with $s. Another exploit that comes from this is the fact that this allows us to print the string at any location in the virtual address space (aslong as
+the memory is readable) by making the first part of the buff pointer the memory we want to read at, then specifing n to be the location where our buffer starts on the stack
+and then using $s, the %n format specifier also allows for you to write to locations in memory aswell which is another thing that can be exploited.
+
+more info at: https://vickieli.dev/binary%20exploitation/format-string-vulnerabilities/

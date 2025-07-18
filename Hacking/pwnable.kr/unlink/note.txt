@@ -1,0 +1,40 @@
+need to exploit a doubly linked list for this ctf, it seems A is allocated first, then B, then C, and im only given the option to overflow A which i can probably use to overflow
+B and C aswell, seeing as theyre leaking the stack address aswell i probably have to to do a return address overwrite and there being no canaries supports this even more, so
+overwrite the return address to go to the shell() function to get shell access, so i need to...
+
+1. set the B bk and fd fields to around the area i want to write
+2. then when i use struct accesses on these fields i can write what i want
+
+so for example use B's bk field to point to arount the return address of unlink, then have B's fd field to point to the address of the shell() function, in terms of the unlink
+function let BK = "return address of unlink" and FD = "shell function address" then BK->fd = FD will overwrite return address with the shell function, problem is
+FD->bk = BK which will overwrite some area around the shell function with the address of the return address for unlink and this area should be readonly.
+
+unlink:
+   0x08049219 <+0>:     push   ebp
+   0x0804921a <+1>:     mov    ebp,esp
+   0x0804921c <+3>:     sub    esp,0x10
+   0x0804921f <+6>:     call   0x804933a <__x86.get_pc_thunk.ax>
+   0x08049224 <+11>:    add    eax,0x2ddc
+   0x08049229 <+16>:    mov    eax,DWORD PTR [ebp+0x8] # load P into eax
+   0x0804922c <+19>:    mov    eax,DWORD PTR [eax+0x4] # load value of P->bk
+   0x0804922f <+22>:    mov    DWORD PTR [ebp-0x4],eax # save value of P->bk
+   0x08049232 <+25>:    mov    eax,DWORD PTR [ebp+0x8] # load P into eax
+   0x08049235 <+28>:    mov    eax,DWORD PTR [eax] # load value of P->fd
+   0x08049237 <+30>:    mov    DWORD PTR [ebp-0x8],eax # save value of P->fd
+   0x0804923a <+33>:    mov    eax,DWORD PTR [ebp-0x8] # load P->fd into eax
+   0x0804923d <+36>:    mov    edx,DWORD PTR [ebp-0x4] # load P->bk into edx
+   0x08049240 <+39>:    mov    DWORD PTR [eax+0x4],edx # save P->bk into memory location (P->fd + 4)		*
+   0x08049243 <+42>:    mov    eax,DWORD PTR [ebp-0x4] # load P->fd into eax
+   0x08049246 <+45>:    mov    edx,DWORD PTR [ebp-0x8] # load P->bk into edx
+   0x08049249 <+48>:    mov    DWORD PTR [eax],edx # save P->fd into memory location P->bk		*
+   0x0804924b <+50>:    nop
+   0x0804924c <+51>:    leave
+   0x0804924d <+52>:    ret
+
+
+
+
+
+
+
+

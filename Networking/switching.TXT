@@ -1,0 +1,24 @@
+.switching is the process of data being transfered from one end system to another end system, there are 2 types of switching, packet switching and circuit switching
+
+.circuit switching is a connection based switching that reserves a series of link (called a channel) for the connection between the 2 end systems which they will use for the
+duration of the communication, this type of switching does not require for the reconstruction of the data to be in order because all the data travels along the same path and
+arrives in order (it does not use packets and uses a stream of data instead, packets mean to split the origninal sent data into segments and add headers to each of these
+segments, this is not what happens here, though you can probably implement it so packets are sent on this connection, though it would be inefficient), there are some problems
+with this depending on how you design the circuit switch network, if you allow users to occupy a constant amount of bandwidth per connection for a link it is highly possible 
+you will run out of bandwidth for some links which will cause a queue of people waiting for access to establish their connections, else you could also split the bandwidth of 
+a link via the number of connections, this will obviously cause lower transmission rates for the people using the links but also people can artificially increase their own
+share of the bandwidth if how bandwidth is split is counting the number of tcp connections (are tcp connections even necessary in circuit switching???) for example, so you 
+have to be careful, their are 2 methods that are used to split a link, one is called FDM which is the traditional method that you would assume via splitting the bandwidth of a
+link, and also there is TDM which gives each connection the full bandwidth of the link for a certain very miniscule timeslot called a frame, this architecture is better at 
+handling a select number of users and is better for critical connections where data loss and transmission speed are crucial as opposed to packet switching
+
+.packet switching is what is used in the internet nowdays and does not establish a connection with the end-system before sending, instead the data meant to be sent is split into
+packets with proper headers then sent out to the internet with no correct path and instead the switches that the packet runs into along the way decides the path via waiting
+for the packet to be fully transmitted to it and looking at its headers to determine the next link it should send the packet on, in this switching architecture bandwidth of links
+are not reserved and instead each packet gets the full bandwidth of the link (this compliments the fact that packets have to be fully received, else a switch could receive a
+bunch of packets at once which will also increase processing delay) this causes delays at each switch since now end-systems will now have to wait for their turn to use the link
+and if a link is also congested enough the potential of packet loss aswell (which makes tcp much more relevant in packet switching as opposed to circuit switching), this architecture
+is better for handling a large number of users as opposed to circuit switching while still keeping users somewhat happy
+
+.it is argued that circuit switching is inefficient since lets say a connection is made and both users go silent, that period of silence wastes valuable bandwidth time that
+can be used for other connections this is another reason why circuit switching is unfit for use for a large number of users

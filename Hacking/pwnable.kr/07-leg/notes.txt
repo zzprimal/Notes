@@ -1,0 +1,13 @@
+0x00008ce4 + 0x00008d0c + 0x00008d80
+
+key1 = 0x00008ce4 // correct
+key2 = 0x00008d0c // correct
+key3 = 0x00008d80 // correct
+
+key1 is 0x00008ce4 since pc is stored inside of r0 which is return register and since pc is current instruction + 8 we get 0x00008ce4
+key2 is 0x00008d0c since we mov pc to r3 and since we are in thumb mode pc is not current instruction + 8 so we get 0x00008d08, we later add 4 to this so
+we end up with 0x00008d0c, we then move this to r0 our return value so we have final value 0x00008d0c (there are some instructions inbetween this mov and
+the operation instructions on r3, but apparently these are obsolete, we switch to thumb node at instruction "bx r6" since r6 has least significant bit 1)
+key3 is 0x00008d80 since this is the next instruction after the return to main and we mov the link register (lr) to return register r0
+
+value is 108400 and key is "My daddy has a lot of ARMv5te muscle!"

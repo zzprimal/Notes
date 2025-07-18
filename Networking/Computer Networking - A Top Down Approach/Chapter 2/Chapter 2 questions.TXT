@@ -1,0 +1,664 @@
+Section 2.1:
+
+R1:
+.Youtube is an example of a website, youtube uses http for everything im pretty sure with possible tls encryption in the application layer aswell, it uses http for getting
+the required files for its website pages and also http to get the video that a user clicks on (specifically they probably use http2 or something)
+
+.gmail is another example of a website we can go over, while im pretty sure gmail mail servers support smtp messages from other mail servers that are owned by different companies
+(outlook maybe for example) im pretty sure the gmail servers themselves use just normal http for sending emails from their clients to other users and maybe their own other
+mail servers
+
+.Netflix is another example, netflix uses http for both webpage and video chunk sending, but when sending video chunks netflix uses another protocal with http (this protocal
+can be considered to be implemented in a sublayer of the application layer) called dash which pretty much throttles the bit rate of the chunks the CDN server sends depending
+on the fluctuating throughput of the client (so instantaneous throughput i assume)
+
+.Twitch is another example, it uses http for its webpages and a different protocal called RTMP for its video streaming apparently
+
+.any other mail delivery service uses or atleast support smtp or a secure version of it (think its just smtps)
+
+R2:
+The application architecture is decided by the programmer of the application and is how the programmer decides their application is constructed an in the context of network
+communication how the application communicates with another application on a different host, the network architecture on the other hand is something like the TCP/IP model
+for the internet, the network architecture provides a set of services for 2 different hosts to communicate with eachother, more specifically it provides services that allow
+1 host (the client) to make a request to another host (the server).
+
+R3:
+The client is the host that initializes the connection first and is the one to make the request and the server is the host that is the one that recieves the initial request
+in the communication between the 2 hosts, using the client-server architecture as an example the server in this case is always on and is awaiting to recieve requests from
+clients, when a random host machine sends a message to the server to make a connection and potentially a request later that is called a client, a more specific example of this
+would be lets just take one of googles web servers for example, lets say you start up google chrome and make a search query, a lower level abstraction of what is happening here
+is that you are starting up a client application that makes a request to one of googles webservers for the file that encodes the website for the search query.
+
+R4:
+No, in the context of P2P connections you can say the one that is downloading content is the client and the one uploading content is the server (this may require some more
+thinking since maybe in P2P connections the client isn't the one that initializes the connection and instead the server just starts sending out data at random)
+
+R5:
+The source ip address is used to identify the host that is sending the data, and the source port number is used to identify the process on that said host that is sending data
+to the server. More specifically the ip address, port number, and the transportation layer protocal used (and im pretty sure maybe the internet layer protocal aswell) is used
+to identify a socket that is located in the internet which then the application that created that socket uses that socket to read the data that is sent to it from another 
+socket that is on the internet.
+
+R6:
+UDP, TCP requires setup before you send messages, specifically TCP guarentees a connection to be setup between client and server before communication can start which requires
+a 3 way handshake before you send out messages, while with UDP you can just send out messages immediately (though the tradeoff here is that your message is not guarenteed to
+be delivered in this case, but using UDP is still much faster since you don't have to wait for the 3 way handshake)
+
+R7:
+
+R8:
+Reliable data transfer: Reliable data transfer guarentees that any packet that is sent from the sending host will be recieved by the recieving host, TCP provides this service
+but UDP does not provide it
+
+Throughput: Provides a guarenteed amount of throughput (bits/s) for the process to recieve or send data, TCP kinda provides this with congestion controll (this only lowers
+the throughput though im pretty sure) while UDP provides none of the sort
+
+Timing: Provides data is guarenteed to be delivered in a certain amount of time, none of TCP and UDP provides this service (this type of service is very hard to impliment since
+there are just to many variables when it comes to delivering data across the internet to guarentee that data will be delivered in a certain amount of time)
+
+Security: Provides the security of the data that is delivered (aka your data is encrytped so no potential third parties can read said data), none of TCP and UDP provide this
+but this can be implimented in the application layer by the TLS protocal
+
+R9:
+TLS is applied at the application layer, transportation layer protocals are applied in the OS and unfortunately TLS is not a protocal applied in the OS, if you want to impliment
+TLS in your application you either have to import a library that impliments TLS and use the API that library provides or you have to create a library yourself for TLS and use
+that to impliment TLS in your application.
+
+
+Sections 2.2–2.5:
+
+R10:
+Handshaking protocal is done between 2 end systems to initialize a connection between them and is done before actual communication is done, this is most notably done in TCP 
+where before communcation starts the 2 end systems do a 3 way handshake so it acts as proof that the other end system is up and they are capable of responding to our messages,
+this is also done in the SMTP where the 2 end systems will introduce themselves before the client sends the information necessary to send an email (i assume this is done in
+smtp as a confirmation of the end system we are communicating with though im not 100% sure)
+
+R11:
+Because TCP provides reliable transfer of data while UDP doesn't, with UDP its possible that the message we sent doesn't get delivered and we never know and just assume it has,
+it is also possible that our message does get delivered but the bits get corrupted somehow and the wrong message gets delivered which could be catastrophic in some scenarios
+which is kinda the main reason why TCP is better than UDP in this scenario.
+
+R12:
+when a person first goes to a website the webserver notices that this ipaddress (and possibly also source port number just in case PAT is being used) for this user is a first
+time visiter and doesn't have a cookie assigned to it, as a result a cookie is generated for that user and an entry corosponding to that cookie is saved in a database for that
+server, the webserver then sends an http response packet where one of the header fields contains the cookie that the webserver has assigned the user, the user's web browser
+then proceeds to save that cookie and going forward new http requests to the webserver will be sent with a header that specifies the user's cookie, when new requests are
+recieved by the webserver it will see the cookie of the user and save where the user has browsed in the data base to do stuff like give recommended products based on where the
+user has browsed, allow the user to stay logged in if they close the site, save payment information, etc
+
+R13:
+lets say you revisit a website you have visited before, what web caching will do is save the necessary objects to load said website on a web cache so your http request doesn't
+have to travel all the way to the corropsonding webserver to retreive the necessary objects to save the time, but this only saves time if the necessary objects are on the web
+cache so time is only saved if you or another user sharing the web cache has visited the website before using the same url and even if this is the case it is possible the
+necessary objects are still not on the web cache since they were removed to make more room.
+
+R14:
+its very difficult to do this so just skip
+
+R15:
+SMS is a service that is used by mobile phones to send messages between them using a cellular network, SMS defines a set of protocals that are used in the TCP/IP protocal
+stack, these protocals are SMPP and im pretty sure TCP for example (not sure about TCP), we will go over some messaging services and whether they use the same protocals as 
+the SMS service
+
+Snapchat: Snapchat from what i read can send sms texts to you as login codes which they use your phone number to send, but actually messaging other people is done over the
+internet and not sms
+
+Whatsapp: Whatsapp also does not use sms and requires and internet connection to send messages
+
+Instagram: like snapchat im pretty sure instagram does use sms for login codes for 2FA but does not use it for its dm service
+
+Apple messenger: this is apples messaging service and comes with iphones so obviously it uses sms
+
+R16:
+So first Alice's user agent would send either a http or a smtp message to her corrosponding mail server that acts as a data center to store all stuff involving her email, then
+the mail server waits for Bob's corrosponding mail server to go online so it can send an smtp message with alice's message to it (Alice's mail server will wait in intervals of
+30 minutes to send the smtp message to bob), then once Bob's mail server receives Alice's email Bob will check their email and their user agent will send a IMAP or an HTTP
+request for the messages in their inbox which will include alice's email that she just sent
+
+R17:
+The header fields look like the following:
+
+from:	C. Adèle Kent, KC — Reviewer <inreview@ualberta.ca>
+to:	ragosin@ualberta.ca
+date:	Aug 6, 2024, 2:30 PM
+subject:	Reminder of August 15th submission deadline for third-party encampment review
+mailed-by:	ualberta.ca
+signed-by:	ualberta.ca
+security:	 Standard encryption (TLS) Learn more
+
+we have who the email is from field (includes a name and an email address), the email addressee, the date it was sent, the subject, who it was mailed by, who the message was
+signed by (via their private key), and the security used
+
+R18:
+HOL blocking is when a large object that is part of a webpage blocks the sending of all other objects causing the webpage to take forever to load, an example would be a webpage
+with a video attached that is 500mb in size is sent before the actual html file for the website, then that 500mb video has to be sent to the user before the html file which
+causes the loading of the website to be held up and bottle necked by the transmission of that video file. This is solved in http/2.0 by either 2 features of this protocal,
+their is a feature of http/2.0 that allows you to interleave the data from all your objects so that for example 1kb of the video will be sent then 1kb of the html file then
+1kb of some other object then it repeats, this makes it so that the html file won't have to wait for the whole video to be sent before being sent to the user and instead it
+only has to wait for a certain fraction of the video bits to be sent. Another feature of http/2.0 that solves this issue is giving priority to an object so that a certain
+object will be sent before another (this priority is a value from 0-255, so just a byte)
+
+R19:
+Yes, this is done by DNS server CNAME and MX resource records, these records designate a cannonical name and a mail server name respectively for a host name given which means
+a single host name can have 2 different host names attached to it and hence 2 different ip addresses, one for the web server and one for the mail server
+
+R20:
+I have no idea for edu email addresses but for gmail addresses this shouldn't be possible since the user agents sends their message to an outgoing mail server first (
+specifically probably smtp.gmail.com or something like that) which would not put any information about the senders ip address in the email, all the outgoing mail server does 
+is send the mail to an incoming mail server and sign the email with it's private key
+
+
+Section 2.5:
+
+R21:
+It depends, if we split that 30s interval into 3 intervals of 10s and in one of the 2 first 10s intervals Alice is part of Bobs top 4 senders of data then yes Bob will start
+to send data back since receivers will always send data back if the amount of data they are receiving is alot, if not then no Bob won't send data back to alice here
+
+R22:
+From what i read the only way for alice to start retrieving chunks is for alice to be randomly choosen by another peer as one of the random peers that a host chooses to upload
+chunks to in hope that they will become top uploaders for eachother and mutually benefit, other than that unless there is some other feature of bittorrent that is not mentioned
+in the textbook (which is highly possible) this is the only way for alice to start receiving chunks and to start communicating with other peers
+
+R23:
+An overlay network is a virtual network that uses physical networks to travel from one point to another, so an overlay network directly connects one host to another host using
+virtual links but in reality what is actually connecting these 2 hosts together are physical networks that use physical links and protocals at lower layers, an example of a
+overlay network would be the link layer 2 network which sends frames from host to host, but this network is layered (or overlayed) on top of layer 1 which is the physical 
+layer and without the layer 1 physical layer the layer 2 network cannot function since it uses the layer 1 infustructer to send its frames over its virtual links, so an overlay 
+network does include routers either virtual routers or physical routers, virtual routers im pretty sure is just a router incorporated in software that does the same thing as
+what a physical router does stuff like distributing packets to the correct hosts except incorporated in the virtual network and not the physical and also only works with the
+layers supported in the virtual network, while a physical routers purpose in a virtual network is to act as a interface to get outside of the virtual network and get access
+to the outside network (the physical network and from there the internet for example)
+
+R24:
+CDN networks adapt usually one of the 2 server placement policies, that being Enter Deep, or Bring Home
+
+Enter Deep: The idea of enter deep is to enter as deep as possible into the hierachy of networks that is the internet, more specifically the CDN network places its clusters
+inside access isp's which is the lowest level isp there is in the internet, the reasoning for this is this allows the CDN clusters to be as close as possible to its potential
+users which results in less delay when a user requests something from a CDN server (this isn't completely true but the distance between the user and server is somewhat 
+proportional to the delay experienced so it still helps with delay and also decreases the chance of data flowing through a really bad bottle neck link), the disadvantage of
+this method is that your CDN clusters become significantly harder to manage since they are so spread out at all these access ips
+
+Bring Home: The idea of bring home is kinda opposite of that of enter deep, instead of spreading out alot of clusters of servers at places close by to your users you instead
+lower the amount of clusters and increase the amount of servers in each cluster and bring the clusters to IXP which are points that connect isps so they can peer with eachother
+which will also allow multiple access isps to access the clusters we set up there, the advantages and disadvantages here are the complete opposite of the enter deep philosophy
+for cluster placement, now the advantage is the low maitenence fee and the disadvantage is the increase in delay to the end user as a result of being further away and potentially
+running into bad bottleneck links
+
+R25:
+How the user is redirected to the CDN server, for example it was mentioned that netflix redirects the user to the cdn server by one of netflix's webservers acting directly
+as a DNS server and just giving the user the ip address to the CDN server directly as opposed to an alternate approach which is just the normal DNS lookup by the user taking
+the url that the video is played on and making a DNS query (aka DNS redirection). Another factor that needs to be considered is how you want to cache the data on your CDN
+server, there is pull caching and there is push caching, pull caching the regular caching that you are used to where after a request for data that isn't on the server the
+CDN server will store that data for a certain amount of time depending on conditions (that condition can be a straight up timer or if that data stops being requested enough)
+and then drop the data to make more room for new data, while push caching just pushes new data on the server during off-peak hours hoping users will request for it. The last
+thing to consider that i will talk about will be cluster selection which is the process of choosing what cluster of server's a client should get its data to decrease delay as
+much as possible, one is geographically closest which as the name suggests chooses the CDN cluster that is closest to the user, the problem with this approach is that the
+closest doesn't guarentee it has less delay to the client, the CDN cluster that is closer could have a worse bottleneck link when compared to a CDN cluster that is further
+away, another approach is real time measurements which as the name suggests performs actual measurements of delay to determine which is the best CDN cluster, one way to
+implement this is to have CDN clusters send out probes and measure the delay for the LDNS servers to recieve the probe for example and this can act as an approximation for how
+much delay there is when sending data from CDN clusters to users, a problem with this approach is that its possible that LDNS servers could not be configured to respond to
+these said probes (because of how their firewall is set for example).
+
+
+Section 2.7:
+
+R26:
+Well the TCP program requires 2 sockets since one is for listening to incoming clients that are looking to establish connections and one for the actual data the client that has
+established a connection with sends (since multiple clients can establish a TCP connection with the server this model is necessary where we need 1 socket to listent to connections
+and another one for the actual data communication) while with UDP this extra socket isn't necessary since clients don't try to establish a connection with the server before
+communicating so its useless to try and create multiple sockets to seperate client traffic, if a TCP server was to support n simultaneous connections with clients then n+1 
+sockets would be necessary, 1 for listening for client connection requests, and the other n for seperating communication between each client
+
+R27:
+Because with TCP the client needs to establish a connection with the server before communication starts since this is a service TCP provides, if the server is not on a connection
+cannot be established and hence we cannot go onto the next step which is actual communication and exchanging data, while with UDP we do not need to establish a connection
+before communicating so even though the message from the client will never reach the server (since the server is not on) we can still send the message (and will not receive a
+response)
+
+
+Problems:
+
+P2:
+
+Sms: Sms uses an application layer protocol called SMPP which stands for short message peer to peer and it uses tcp for transfering text message, but Sms does not use ipv4 or
+ipv6 protocols for its network layer since Sms functions without using the internet, instead it uses phone numbers as a replacement for ip addresses (i could not find anything
+specific about this though) but it does use tcp
+
+iMessage: iMessage uses a encryption protocol called PQ3 which is supposed to be very secure and provided protection even against quantum attacks (i assume this just means
+attacks that use quantum computers for computation) and uses tcp aswell
+
+WeChat: wechat uses an encryption protocol called MMTLS which uses AES encrytion from what i read and wechat hides the application layer protcol that they use so nobody actually
+knows what they use in this layer (probably a self created protocol is obvious), but they don't only use this hidden application layer protocol and they use others like http
+aswell with tls ontop (so https) and uses tcp for transportation layer communication and apparently uses udp for server selection
+
+Whatsapp: whatsapp uses a protocol called XMPP (Extensible Messaging and Presence Protocol) which is an application layer protocol on top of tcp, XMPP uses XML to format the
+data that a user sends to another user and defines an address in the application layer called jabber ids
+
+From what i read all these applications use different application layer (for the texting part of their application atleast) or either straight up just hide the application 
+layer protocol that they use, and they all use tcp as the transportation layer protocol aswell since it guarentees the correct data is transfered.
+
+P6:
+
+a: There is a header in the http protocal called connection and in it you can specify close to signify to close the current persistent connection between the client and the
+server, both the client and server can send this header with close in it to specify to close the TCP connection
+
+b: None, http does not provide any encryption, if you want encryption for your http protocal you have to use https which is just http with tls applied over it (tls acts
+as a sublayer below the application layer in this case and between the application layer and the transport layer)
+
+c: Yes they can though it is looked down upon since this would cause TCP congestion control to give more of a bandwidth cut to this client then other clients, this was implemented
+by alot of http/1.1 browsers since using a single TCP connection causes HOL blocking and there was no way to solve this potential blocking other than creating more TCP sockets
+for each object being requested, thats partially why http/2.0 was created to solve the HOL blocking problem so that more users will start just using a single persistent TCP
+connection and stop trying to cheat for bandwidth
+
+d: My understanding of this might be wrong (the RFC 2616 http documentation is not clear about this, im viewing 14.10) but if one of the hosts want to close the connection
+they have to send an http message with the connection header with close specify and before they close they wait for 1 more message to be received from the other host, so no
+this should not happen since this would mean the receiver of the close request would have to send another packet after it received the close packet from the other host and
+after it sent its last packet over the connection knowing this would be the last packet the other host would receive
+
+P7:
+It would be just the summation of all the round trip times with R_0 added twice, round trip time does not account for transmission delay so this is just an estimate (though 
+an accurate estimate since the packets we send are small since we just send DNS and a http request packets and the packets we recieve back are DNS and a http ok packet with 
+no transmission time hence the total transmission time is pretty low and miniscule when compared to the other delays, this time also assumes that the DNS requests uses
+UDP as opposed to TCP and that the TCP connection established with the server uses the second message the client sends as a http request message and no TLS is used obviously
+since im saying http as opposed to https)
+
+P8:
+
+a: This would just be summation of round trip times from R_1 to R_n plus R_0*9*2 where the 9 comes from the single html file and the 8 objects we have to request and the 2
+comes from the amount of round trips it takes to get each object, 1 for the TCP handshake and one for the http request (this answer uses some of the assumptions mentioned in 
+P7 and these assumptions will be used for the remaining parts aswell)
+
+b: This would just be summation of round trip times from R_1 to R_n plus R_0*3*2 where 3 comes from 1 for the initial http request for the html file (can't request the other
+objects in parallel with this one since the html file is used to find out what other objects are needed), 1 for 6 other required objects in parallel, and 1 for the last 2
+required objects, and we multiply this by 2 since each object requires 2 round trips for the tcp handshake and the http request
+
+c: This would just be summation of round trip times from R_1 to R_n plus R_0*10 where the 10 comes from the tcp handshake (this is only done once since the connection is
+persistent), and 9 for all the objects required (note parallel tcp connection are moreso a property of the web browser as opposed to the http protocol, though persistent and
+non-persistent connection are a property of http specifically past version 1.1)
+
+P9:
+a:
+
+delta = 1000000 / 15000000 = 0.06666666666s
+beta = 
+delta*beta is the amount of objects that arrive at the link during the time that it takes to transmit 1 object
+
+P10:
+Yes it would since parallel tcp connections in this case would allow you to request after you have recieved the initial object the other 10 objects at once which would save
+you time and would allow you to cheat more bandwidth than what you should normally be getting, non-persistent connections would only make sense depending on the amount of 
+parallel connections you are implimenting, if you can have 10 parallel connections then having non-persistent connections would not be that much of a time loss when compared
+to persistent connections since you would only have to re-establish a connection only once (that connection being the initial connection that was made to get the first object),
+but the lower the number is from 10 the less efficient non-persistent connections become when compared to persistent connections since more connections you will have to
+re-establish for each object and more time will be taken while for persistent connection you will be able to use one connection to request multiple objects. If we want to get
+more specific if n < 10 is the number of parallel connection we can have at once then the amount of rounds that will have to be made to request objects would be 
+1 + ceil(10 / n), if we do non-persistent connections then the amount of time that would be taken is (1 + ceil(10 / n))*RTT_1*RTT_2 where RTT_1 is the amount of time to
+establish the TCP connection and RTT_2 is the amount of time that it takes to request and recieve the object, for persistent TCP connections we get a time of...
+(RTT_1 + ceil(10 / n))*RTT_2 which is less than the non-persistent connections time, RTT_1 and RTT_2 are as follows...
+
+RTT_1 = 2*200 / (150 / n)  = 400n / 150 = 8n / 3 
+
+RTT_2 = 200 / (150 / n) + 100000 / (150 / n) = 4n / 3 + 2000n / 3
+
+note this is ignoring propogation time since we are not given a value for how fast the bits on the link travel
+
+P11:
+
+a: yes because TCP congestion controll will balance the amount of bandwidth each TCP connection gets, if bob has n tcp connections since there are 4 other users not using
+parallel tcp connections the transmission speed of the link will be split 1 / (n + 4) ways and bob will get n / (n + 4) of the amount of transmission speed since he has
+n tcp connections while the rest of the users will only get 1 / (n + 4) of the transmission speed, note that as n increases the other 4 users get even less of a cut while bobs
+will increase (this isn't obvious at first looking at the function but calculating the derivative will probably give you a positive value for positive integers hence increasing)
+
+b: Yes it would but they would be less effective since now the other users are taking a bigger split of the bandwidth, for bob to get some of that bandwidth back he would
+have to open even more tcp connections to take a bigger split
+
+P12:
+i edited the TCPserver.py file to make it so that it forks a child when it receives a new tcp connection and that child will handle all requests when it comes to that connection,
+and when the connection terminates the child terminates aswell and the child prints all messages it receives from the browser. A problem i ran into here is that my program was
+only receiving http connection requests which is done when when tls is being used (or https) and the web browser wants to establish a encryted connection directly with the server
+with no man in the middles being present which is a problem since i want to look at the http requests, a solution was finding a unsecure website to test on so that my web browser
+will immediately start sending get requests as opposed to the initial connection requests that is done with tls. When i do this my browser immediately sends a 
+http get message for the html file for the webserver, when i terminate my proxy server the web browser immediately gives me a no internet page, if i don't terminate my proxy 
+server the web browser will load indefinitely since my web browser knows that it delivered the http get packet correctly since it received a tcp ack from the proxy server so 
+it just assumes it will get a response eventually, i've done this 3 times and each time i got from the web browser a http get request and not a conditional get (which i think
+makes sense since the proxy server should be the one sending the conditional get). Some interesting things i want to put on here while testing with the application i made...
+
+.Some of the http connection requests my program receives will have the other side of the tcp connection terminate their end after a certain time period it seems (probably using
+some socket option that i don't know the name of), initially i thought these connections weren't closed and my program was just printing the bits of a tls message which isn't
+readable (which was dumb to think that on my part because theres no way the tls handshake wouldn't be readable and there is absolutely no way that all the bytes i was getting
+were non-readable ascii characters) but instead it was just a empty byte string that was being returned by the recv method which signifies the connection was cut (more specifically
+by the client since i didn't add code on the server to cut the connection) so the client (specifically my web browser) was cutting some tcp connections it made to my proxy after
+a certain time limit for http connection requests if it did not receive a http response in time
+
+.In earlier versions of my program that only accepted a single tcp connection to branch a new socket for that connection, then never called accept again so for the lifetime
+of my program there is only 1 socket that is used for bidirectional communication between client and proxy server in this type of program i had analyzed via packet sniffing
+that my web browser was establishing multiple tcp connections with the proxy server and sending http get and/or connect messages to it which didn't makes sense to me since
+my application only accepted a tcp connection once using the accept method and my web browser was sending multiple tcp handshake segments using different source ports which
+would in theory require a different socket for each of these from the proxy server program that i created and would require me to call accept multiple times, and my proxy server
+was only receiving messages from the single tcp connection that was initially established and not from these other random tcp connections that i didn't even accept a connection
+with. When i did some testing when the application is not running my web browser just infinitely sends syn tcp segments and infinitely gets rst, ack tcp segments as response
+since there is no application on the proxy server listening on port 12000 using tcp, so the conclusion that i come to after some additional research is that the accept method
+does not actually accept the tcp connection itself and is just used to get the new socket and the source address that comes when the os accepts the tcp connection for you, what
+actually determines whether or not your os accepts the tcp connections is whether or not you called the listen method with the proper socket that is using the right destination
+port number that your computer is trying to send to, this came to me finding out about passive and active sockets, passive sockets are sockets that don't actively communicate
+with clients but are sockets that check to see if a new client wants to actively communicate then branches a new socket called an active socket to handle communication with this
+client (this is done when accept is called), and an active socket is the socket that actually does the communicating with the client socket and is the one actively exchanging
+data. From my testing it seems that the backlog argument for listen is very inconsistent and is dependent on the os, for example if i specify 0 for this argument in the old
+version of my code that only does accept once then the backlog for the passive socket is only of length 1, and when i use the newer version of my code that calls accept multiple
+times but i add a sleep after each accept then the passive socket backlog becomes of length 2 when i specify it to be of length 0 which is weird behaviour (when the passive 
+socket cannot allow anymore unaccepted tcp connections the proxy servers response is to just not respond at all to the tcp handshake) and once either one of the ongoing tcp 
+connections that were not accepted is closed or accept was called in the code again (which will create a socket for that non-accepted tcp connection) the proxy server will 
+actually respond to the tcp syn spams from the client until it fills up that buffer again that is size of accept_backlog_arg + 1 (note the versions of my code is in the P12.py
+file in chapter 2 folder)
+
+.non https web server i used was http://http-textarea.badssl.com/
+
+P13:
+
+a: i don't know what frame times mean so ill just say the amount of frams sent, the amount of frames sent in this case would just be the total frames that being 2000 + 5*3
+= 2015, so after 2015 frames are sent would the images be sent
+
+b: if they are interleaved then it would just be 6*3 = 18 frames before all the images are sent since each 6 frames sent will contain a frame from each object hence only 3
+rounds of sends would be required
+
+P14:
+6 frames, 3 frames for sending the first image and 3 frames for sending the second image
+
+P15:
+MAIL FROM specifies the email address that is sending the mail while From specifies then name that shows up when the recepient of the email opens the email (note this can
+also be the same value as what is put in the MAIL FROM field or the server can just straight up restrict you from typing something different then what you typed in the MAIL
+FROM field which is something i encountered when playing with telnetting mail servers), also another difference to note is that the MAIL FROM header is used in the smtp
+handshake between servers while the From header is used in the mail itself and is present when a user goes to retrieve the email that is sent to them
+
+P16:
+In smtp the end of the body of the mail is signified by a single period on a line by itself, while http doesn't really have something to signify the end of the message body,
+instead there exists a header in the http protocal called the Content-length header which specifies how big the entity body is so the receiving program should be reading
+whatever amount of bytes this field specifies after they are done reading all the header fields in the http message, this is only one method though another method is using
+the header called transfer-encoding which i didn't take the time to understand how it works
+
+P17:
+MTA stands for mail transfer service and refers to anything that transfers mail messages that being mail user agents (MUAs or clients) and the mail servers themselves, the
+source of the spam in this mail message i assume would be tennis5@pp33head.com> since this is the user agent/client that is the one actually sending the email and is specified
+in the Return-path header which specifies the sender (this header is used for when there is an error sending an email so the mail server knows what email address to send the
+error message to). (another interesting thing to note is that the multiple received headers gives a full trace of the mail message history of mail servers that the mail message
+went through, the bottom received header specifies the first mail server the mail message went to and where it received it from and the order goes from bottom to top for the
+pathway the mail message took through the network of mail servers)
+
+P18:
+
+a: Whois is a database that stores information associated to a domain name such as who owns the domain name and how to get in contact with them and other information
+
+b: i searched up the ipaddress of 2 google dns servers with the ip addresses 8.8.8.8 and 8.8.4.4 using a whois database at whois.com, and both of them showed a netname of
+GOGL
+
+c: overall the dns queries didn't give that much of a different result, the only difference being when i query the same host name on all 3 for a A type resource record i get
+different ip addresses which should be obvious atleast for hostnames that are big like google.com with alot of servers so the chances of multiple dns servers redirecting you
+to the same server is small (maybe this would be possible if the dns servers use a selection algorithm to choose the server with the smallest delay relative to your location
+but i'm not sure dns servers even do this other than CDN dns servers)
+
+d: one host name that i found with multiple ip addresses that my local dns server gave me was smtp.google.com which is the mail server for google.com, my institute ualberta.ca
+does not have multiple ip addresses, doing a query for type A resource records for ualberta.ca only gives 1 ip address so atleast to the knowledge of my local dns server
+ualberta.ca only has 1 ip address
+
+e: the ip address range specified by this whois data base is 192.99.108.112 - 192.99.108.127 or 192.99.108.112/28
+
+f: these tools can easily be used to find the ip addresses for everything associated to an institution from name servers, web servers, mail servers, etc which can then be used
+for different types of attacks like a DDOS attack for example, also it lookups on whois gives other information like where the institute is located (though im not sure how
+useful this information would be for a cyber attack but its still something to mention)
+
+g: because if it isn't it would be impossible to know who owns what host name and if for example you are trying to aquire a specific host name but said host name is already
+occupied, then if whois did not exist it would make trying to access the owner of the host name particularily fustrating and probably be nearly impossible and it would be even
+more fustrating if the person sitting on this hostname was not using it to host a website (some of the information on these databases can be used for harm, but said harmful 
+information was already easily aquireable before just by a simple DNS lookup, im just talking about ip addresses here so i could be completely wrong)
+
+P19:
+
+a: when i send a query for the ip address of the host name of my institution ualberta.ca the path goes from loopback (this is to get a list of ip addresses for root dns servers
+that are saved on my system), f.root-servers.net (this is random and can be any of the .root-servers.net root servers), j.ca-servers.ca (a tld dns server for .ca domain names
+im pretty sure), and ns2.d-zone.ca (which is the authoritive name server for ualberta.ca)
+
+b:
+
+google.com: loopback, k.root-servers.net, f.gtld-servers.net (tld server for .com), and then finally ns1.google.com which is a name server for google
+
+yahoo.com: loopback, i.root-servers.net, f.gtld-servers.net, ns3.yahoo.com which is a yahoo name server
+
+amazon.com: loopback, l.root-servers.net, i.gtld-servers.net, ns1.amzndns.co.uk which is a amazon name server
+
+P20:
+One way i can think of is making a query for the server ip address every like hour and so and making sure the caches on your local system that hold these ip addresses are
+cleared for each query, if every attempt at a query for a certain webserver every hour or so returns very quickly with the ip address of the website then it is very probable
+that the website is very popular among the users at your department, if it rarely returns quickly then its probable to say that it is not that popular. This test sees how often
+the ip address is in the cache, if it is in the cache a large majority of the time then its likely that the web server is popular since if it wasn't then the entry would have
+been cleared from the cache during our lookup, if it isn't in the cache a majority of the time then that tells us it isn't searched much since if it was its entry would be 
+present in the cache.
+
+P21:
+Just do a lookup on the DNS server with tracing with dig in unix/linux for example with the website, if it returns immediately and the only dns server that was accessed is the
+local one then its safe to say that it was searched up recently since the ip address was in the cache (though i think saying it was accessed a couple seconds ago is a bit to
+optimistic), if the dns server has to return you a ip address of another name server then it probably wasnt accessed recently since it wasnt cached
+
+P22:
+
+Client-Server architecture:
+
+n/u | 300 Kbps | 700 Kbps |  2 Mbps
+------------------------------------
+10  | 10000s   | 10000s   | 10000s
+----|-------------------------------
+100 | 66666.7s | 66666.7s | 66666.7s
+----|-------------------------------
+1000| 666666.7s| 666666.7s| 666666.7s
+
+calcs:
+
+u is obsolete in this case since clients do not upload their files in the Client-Server architecture so we just go over it for values of n
+
+n = 10
+=> max{n*F/u_s, F/d_min} (if you want a more accurate calc adding F / d_max to n*F/u_s will give you a better lower bound, but i will just use the textbook specification in this case)
+= max{10*2*10^10/30000000, 2*10^10/2000000} = max{6666.66666667, 10000} = 10000s
+
+n = 100
+=> max{n*F/u_s, F/d_min}
+= max{100*2*10^10/30000000, 2*10^10/2000000} = max{66666.6666667, 10000} = 66666.6666667s = 66666.7s
+
+n= 1000
+=> max{n*F/u_s, F/d_min}
+= max{1000*2*10^10/30000000, 2*10^10/2000000} = max{666666.666667, 10000} = 666666.666667s = 666666.7s
+
+increases linearly with the amount of clients
+
+Peer-2-Peer architecture:
+
+n/u | 300 Kbps | 700 Kbps |  2 Mbps
+------------------------------------
+10  | 10000s   | 10000s   | 10000s
+----|-------------------------------
+100 | 33333.3s | 20000s   | 8695.7s
+----|-------------------------------
+1000| 60606.1s | 27397.3s | 9852.2s
+
+calcs:
+
+This time client upload time actually matters in this case, the formula for the minimum is similar to that of the server-client architecture, the formula being...
+max{F/u_s, F/d_min, nF/(u_s + sum(i, 1->n, u_i))} = max{F/u_s, F/d_min, nF/(u_s + nu)} (would it be more accurate to divide by u_max instead of u_s + nu since upload rate
+of any host cannot be greater than u_max, would this be a better lower bound?), now for calcs...
+
+n = 10
+u = 300 kbps
+=> max{F/u_s, F/d_min, nF/(u_s + nu)} = max{666.666666667, 10000, nF/(u_s + nu)} = max{10000, nF/(u_s + nu)} = max{10000, 10*2*10^10/(30000000 + 10*300000)} = 10000s
+
+
+n = 10
+u = 700 Kbps
+=> max{F/u_s, F/d_min, nF/(u_s + nu)} = max{666.666666667, 10000, nF/(u_s + nu)} = max{10000, nF/(u_s + nu)} = max{10000, 10*2*10^10/(30000000 + 10*700000)} = 10000s
+
+n = 10
+u = 2 Mbps
+=> max{F/u_s, F/d_min, nF/(u_s + nu)} = max{666.666666667, 10000, nF/(u_s + nu)} = max{10000, nF/(u_s + nu)} = max{10000, 10*2*10^10/(30000000 + 10*2000000)} = 10000s
+
+n = 100
+u = 300 kbps
+=> max{F/u_s, F/d_min, nF/(u_s + nu)} = max{666.666666667, 10000, nF/(u_s + nu)} = max{10000, nF/(u_s + nu)} = max{10000, 100*2*10^10/(30000000 + 100*300000)} = 33333.3333333s
+
+n = 100
+u = 700 Kbps
+=> max{F/u_s, F/d_min, nF/(u_s + nu)} = max{666.666666667, 10000, nF/(u_s + nu)} = max{10000, nF/(u_s + nu)} = max{10000, 100*2*10^10/(30000000 + 100*700000)} = 20000s
+
+n = 100
+u = 2 Mbps
+=> max{F/u_s, F/d_min, nF/(u_s + nu)} = max{666.666666667, 10000, nF/(u_s + nu)} = max{10000, nF/(u_s + nu)} = max{10000, 100*2*10^10/(30000000 + 100*2000000)} = 8695.65217391s
+
+n = 1000
+u = 300 kbps
+=> max{F/u_s, F/d_min, nF/(u_s + nu)} = max{666.666666667, 10000, nF/(u_s + nu)} = max{10000, nF/(u_s + nu)} = max{10000, 1000*2*10^10/(30000000 + 1000*300000)} = 60606.0606061s
+
+n = 1000
+u = 700 Kbps
+=> max{F/u_s, F/d_min, nF/(u_s + nu)} = max{666.666666667, 10000, nF/(u_s + nu)} = max{10000, nF/(u_s + nu)} = max{10000, 1000*2*10^10/(30000000 + 1000*700000)} = 27397.260274s
+
+n = 1000
+u = 2 Mbps
+=> max{F/u_s, F/d_min, nF/(u_s + nu)} = max{666.666666667, 10000, nF/(u_s + nu)} = max{10000, nF/(u_s + nu)} = max{10000, 1000*2*10^10/(30000000 + 1000*2000000)} = 9852.21674877s
+
+Overall P2P is better or equal to CS in every situation in this example, the only situation where P2P would be worse is if the client upload speed is very very bad, bad enough
+to the point that pipelining client download and client upload does not lower the time of distribution (this can be solved though by just having the server start uploading to
+other clients aswell and not calling a job done after a single upload so there are solutions but there are probably disadvantages with this solution aswell like possibly uploading
+the same file twice to the same client at the same time)
+
+P23:
+
+a: Just give each peer a server upload link of u_s / N and since u_s / N <= d_min we have that u_s / N is the throughput of this data transfer/acts as the bottleneck link
+for all of the peers download of the file, which results in the distribution time of FN / u_s (this is just a very good approximation though in reality this is just the
+time that it takes for the server to transmit the whole file onto its link and a more accurate distribution time would add to this value propogation time to the router,
+processing time of only one datagram since we only have to do 1 since the rest are pipelined, uploading time of 1 datagram which is just the client download time, and the
+propogation time of the router to client link though this is assuming that there is only 1 switch/router between server and client, it is easier just to take FN / u_s as the
+distribution time since this value compared to the other values added for the distribution time is much more significant for very large F)
+
+b: Just do the same thing as part a and give each peer u_s / N server upload speed, since  u_s / N >= d_min we have that the d_min link acts as the bottleneck link and since
+this value is the lowest download speed for all the peers it will take the longest to download this file for the respective peer with the d_min value and so we have a 
+distribution time of F / d_min (again like mentioned in part a this is a very good approximation of the distribution time) since all the other peers will have completed
+their download before this peer since their throughput is either u_s / N or d_i which are both greater than or equal to d_min
+
+c: showed this already in section 2.5???
+
+P24:
+
+a: Let u = u_1 + ... + u_n and let r_i = (u_i / u)* u_s represent the portion of the server upload rate that a peer gets, and let the rate at which a peer i uploads its content
+to another peer j be the same as the portion of the server upload rate peer i got from the server (so r_i), so the total upload rate of a peer is (N - 1)*r_i and this is less
+than or equal to u_i since (we will show this by showing this statement is equivalent to a true statement)...
+
+(N - 1)*r_i ≤ u_i
+
+≡ (N - 1)*(u_i / u)* u_s ≤ u_i
+
+≡ (N - 1)*(u_s / u) ≤ 1
+
+≡ (N - 1)*u_s ≤ u
+
+≡ u_s ≤ u / (N - 1)
+
+≡ u_s + u_s / (N - 1)  ≤ (u + u_s) / (N - 1)
+
+≡ u_s*(1 + 1 / (N - 1))  ≤ (u + u_s) / (N - 1)
+
+≡ u_s  ≤ (u + u_s) / ((N - 1)*(1 + 1 / (N - 1)))
+
+≡ u_s  ≤ (u + u_s) / (N - 1 + 1)
+
+≡ u_s  ≤ (u + u_s) / N 
+
+which is true by statement mentioned in the question, hence for peer i we can give each peer j != i an upload speed of r_i, hence the aggregate upload speed to a peer is
+r_i + sum(j, j != i, r_j) = u_s (this makes sense since this is the rate at which a peer is receiving data at a single time since each peer immediately starts uploading
+data to clients once it receives it respective data (remember the router sends data to the client once it receives a datagram, NOT THE WHOLE FILE) the majority of the time
+a peer is receiving data at a rate of the sum of all r_i, this is only a good estimate though as it doesn't take into account things like this rate falling off once
+a peer finished uploading its bit to another peer and other delays (though these other delays are negligible for large F)) and hence the total distribution time (about atleast
+) is F / u_s
+
+b:
+
+
+P25:
+There are N + M nodes in the overlay network that being the N peers and the M routers (Routers being either virtual routers or physical routers to access outside the virtual
+network), and for edges since each of the peers have a tcp connection with every other peer and if we ignore routers that branch out these connections as multiple edges (so
+for each connection we only have a single edge and we pretend routers don't exist in our virtual network) then we would have N choose 2 total edges
+
+P26:
+
+a: technically yes this is possible since the peers actively participating in the bittorrent will choose a random user every 30 seconds to send data to and will continue to
+do so for 30 seconds and then they will choose another random peer to randomly upload data to and through this it is possible for bob to get a complete copy of the file but
+the time to do so can be slow
+
+b: just having the computers join the bittorrent will make the freeriding more efficient (well less time consuming atleast) since it will increase the chances of a active peer
+in the network choosing one of bob's computers as a random peer to upload to and hence bob will be getting more data faster than with one computer
+
+P27:
+
+a: so each video file would need to be combined with each audio file which means we would have a total of N*N possible combinations of video and audio files
+
+b: there are N video and N audio files so if we send them seperately the server would only have to store 2*N files for a certain for each video
+
+P28:
+
+a: your connect method with your tcp client returns in a error since the server isn't up so the tcp client can't perform the tcp three way handshake, since the handshake is
+required before communication starts between server and the client the client is unable to connect with the server and just returns a error and you won't be able to communicate
+with the server
+
+b: your client will send a message to the server but won't get a response since the server is not running during the time the message is received and so the packet is just
+dropped (the server can respond with a error packet so i need to actually do the tests instead of guessing)
+
+c: your client sends a their message to a completely different application than the server application which can cause different responsed depending if the chosen port is
+occupied or not, if it is its possible your packet goes to a different application on the server which will give you undefined and random behaviour depending on the application,
+if its not occupied you will either get nothing back or a error packet that informs you about the closed port
+
+P29:
+You won't have to change anything and communication should work just find, bind just binds to the socket the source port number when sending packets, if you were using connect
+which binds to the socket a default destination for the packets you give it there might be a different result. After this change the port for the client would be 5432 (since
+you binded it to this port) and the server port would stay as 12000. Before this change the client port number was random and was chosen by your resident OS, and the server
+port was still 12000.
+
+P30:
+Yes you can by just having your web browser opening multiple tcp sockets and connecting them to the server, the advantage is that you can take a larger portion of the bandwidth
+of a link since tcp congestion control is used to download the objects associated with a website faster, the downside is that obviously you have more sockets to manage and
+that this possibly encourages other browsers to do this aswell and they can take more bandwidth from you
+
+P31:
+So TCP gives a byte stream between the server and client but does not preserve message boundaries, this means that the messages arriving at a socket can be not in the same
+amount and size as of the messages that were sent by the sending socket (though they will be in order since TCP provides a byte stream), an example is if the sending socket 
+sends the 2 messages HI and HELLO its possible the receiving socket will receive this as multiple messages containing in order H then IHEL then LO. UDP provides message 
+boundaries which means that the amount and size of messages a UDP socket receives will be the same as the sending UDP socket (but UDP does not guarentee it will arrive in 
+order), next we go over the cons and pros of the byte orientated api that tcp provides vs the message boundary api that udp provides. An advantage of byte orientated api is
+that it guarentees that the bits arrive in order and they will not arrive out of order, and a advantage of message boundary is that obviously messages are received how they
+were sent with the same amount of packets sent and the same length, this might be useful in an application that requires messages be received how they were sent, for example
+take an application that has a server that receives sentences in each message from the client and then responds to them, if the client sends the sentence "How are you" in a 
+single message and it arrives as the series of messages "Ho" then "w ar" then "e you" this series of messages is unreadable by the server and hence will affect what the server
+responds with when compared to just "How are you" which is what the client intended to send and get a response to (though this can be solved by supporting in the application
+layer something that signifies the end of a sentence like a period, though this requires extra code from server and client). Each of the advantages for the byte stream and
+the message boundaries act as disadvantages for eachother.
+
+P32:
+The apache webserver is software for webservers that are run to serve requests from clients for objects associated with a website, the apache software is open source and is
+completely free to download though the website does not give you binaries for the source code and only the source code itself (the binaries can be downloaded at different
+websites), some features that the website mentions is ssl and tls support for the server, authentication support so the server can authenticate itself to the client (via digital
+certificate authentification) and also password authentification so the client has to give a password to the server, and a proxy for the server aswell, and many more things
+like http/2.0 support, ipv6 support for example.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

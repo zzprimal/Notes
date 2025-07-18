@@ -1,0 +1,5 @@
+.note that EOF is not a character, but an indicator that is attached to the file (specifically some kernel level data structor attached to the file) that indicates the EOF
+
+.^D is said to be bound to "EOF character" but when in actuallity it is bound to the EOT character (all ^? keys are bound to ascii characters 1-26 in alphebetacal order
+except for ^? keys that are bound to OS signals, but if you unbind these keys from these signals you'll find that they are bound to the previously mentioned ascii characters
+1-26) which just sets the EOF indicator for the file that stdin is reading from (usually just the pty slave)

@@ -1,0 +1,8 @@
+These are the main pieces of software i think that will be useful to learn about and how the coding works
+
+- OS (specifically linux)
+- Database languages
+- AI
+- Program Languages (Compilers, interpreters, etc)
+- Hypervisors
+- Web browsers?

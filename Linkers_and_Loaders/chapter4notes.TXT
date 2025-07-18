@@ -1,0 +1,8 @@
+80% of the storage in a program is allocated by the linker combining the load segments of object files that are used for input, bellow are some cases of the other 20% of the
+remaining storage for programs
+
+IBM pseudo registers:
+pseudo registers are storage that sections of a program can share with other sections, this area of data is not created by the linker, but instead the linker just calculates
+the concatenated size of all pseudo register and then startup code on program execution dynamically allocates this space (in _init function or something similar), pseudo 
+registers are a case of program storage where the linker does not allocate it and instead calculates the size of it and lets startup code created by compilers (?) dynamically
+allocate this space using the size the linker generated.

@@ -1,0 +1,110 @@
+0xffffd75c is location of buffer of 1024 bytes for the input command
+
+do_brainfuck contains switch statement for checking input starting at do_brainfuck+25 to calculate instruction position?
+
+start of tape is located at position 0x0804a080
+counter location for while loop is 0xffffd758
+
+switch statement case '>' is at do_brainfuck+34
+switch statement case '<' is at do_brainfuck+49
+switch statement case '+' is at do_brainfuck+64
+switch statement case '-' is at do_brainfuck+79
+switch statement case '.' is at do_brainfuck+94
+switch statement case ',' is at do_brainfuck+115
+switch statement case '[' is at do_brainfuck+130
+rest just go to termination at do_brainfuck+143
+
+'<' and '>' does not have any if conditionals to check if you have gone past the tape???
+addition and subtraction also overflows aswell
+
+char tape[30000];
+char *pointer = tape; // probably something like this
+
+main(){
+	char input[1024];
+	fget(input, 1024, stdin);
+	int len = strlen(input);
+	int counter = 0;
+	while (counter != strlen(input)){
+		do_brainfuck(input[counter]); // not sure about these inputs
+		counter++;
+	}
+
+}
+
+do_brainfuck(char a){
+	switch (a){
+		case '>':
+			pointer = pointer + 1; // tape pointer
+		case '<':
+			pointer = pointer - 1; // tape pointer
+		case '+':
+			(*pointer)++;
+		case '-':
+			(*pointer)--;
+		case '.':
+			putchar(*pointer); // tape pointer
+		case ',':
+			*pointer = getchar();
+		case '[':
+			puts("[ and ] not supported.");
+	}
+
+}
+
+can exploit the fact that arrow commands aren't checked for whether the pointer has moved off the tape, problem is we are only allowed 1024 bytes for the length of our command,
+can fortunately reach all the way to the .init_array section which is in the range of .got sections, have to do .got overwrites to get a shell, can use brainfuck to write
+the argument for a system call for /bin/sh, need some sort of function that just takes the tape pointer as argument and overwrite its got entry with the system function,
+need to find this or find another gadget i can use, i can use command buffer as argument since strlen uses that as argument, so just have first characters of command buffer
+be /bin/sh then overwrite strlen .got entry with system function
+
+got to .got strlen entry with pointer, read entry, subtract address from strlen offset to get base of libc, add that base to the system offset, overwrite .got strlen entry
+with calculated address, need to learn writing exploit scripts with pwn module to do this probably :(
+
+
+.got for strlen: 0x804a020
+tape is: 0x804a080
+
+have to use __stack_chk_fail instead since i can only overwrite strlen .got entry one byte at a time which causes problems, this is impossible since we can't overflow to this
+canary since fgets is used to write to the command buffer :(, idk wtf to do
+
+candidates for .got overwrite
+.strlen (problem: called every for every brainfuck character so every time i overwrite a byte of .got entry the new address will be called)
+.puts (problem: takes as argument "[ and ] not supported." and not "/bin/sh" which i need for shell access)
+.getchar (problem: takes no arguments so im just giving to system whatever is currently on the stack, and i need this function to do the byte overwrites which can be solved by just doing normal "+" and "-" operations, but i don't know if i have the room for that)
+.putchar (problem: takes as argument a character on the tape and not the tape pointer itself)
+.__stack_chk_fail (problem: can't even call in the first place because it is impossible to generate a buffer overflow since fgets is used (else this would be perfect :( ))
+
+
+I think i need some sort of ropper gadget to help me out here, though i don't know how
+
+Can i just create a overflow on the stack by just doing a .got overwrite and overwriting an entry with the gets function or something?
+
+Candidates again:
+.strlen 
+.puts 
+.getchar 
+.putchar 
+.__stack_chk_fail
+
+gets offset: 0x0728f0
+strlen offset: 0x09b380
+system offset: 0x048170
+
+strlen args: command ptr, 0x400, stdin
+
+how about just looking at .got table
+
+can pointer overwrite canaries?
+
+0xffffdb5c is canaries
+0x804a080 is tape => 0xff4a080
+
+
+
+
+
+
+
+
+

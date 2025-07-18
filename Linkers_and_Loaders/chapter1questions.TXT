@@ -1,0 +1,19 @@
+1.)
+The linker is responsible for symbol resolution while the loader is responsible for loading the program onto the disk to get it ready for execution, it is useful to seperate
+these two if we want to seperate these 2 tasks, say for example we want to create an executable for our source code but we don't want to execute the program just yet, then
+we can just compile and use a linker to get the executable ready so we don't have any downtime when we want to start doing the execution, if we combined the linker and the loader
+then we would have to wait longer for our cpu to start executing our program.
+
+Is a linker useful or is it necessary?
+2.)
+To answer this question let us look at a world where linkers do not exist, this would mean creating an executable would just be taking the source code, compile it, then
+assemble it, all the definitions for the functions we use would have to be located in the source code file since we can't put these definitions in other files since there is
+no linker which would cause our source code file to be insanely bloated the larger the program is, and if we want to reuse a function that we previously defined in a 
+previous program we would be required to copy and paste it inside our new program to use it and useful functions that exist for I/O for example would need to be defined in
+our program aswell as opposed to just declaring and using it in a regular C program, this is all very inconvenient and a very unorganized way to write our code and also bloats
+our programs and takes up more space, a linker solves this problem where we can instead have our definitions for functions we use present in other files which saves disk space
+and have commonly used functions (the standard library) be shared by other processes to potentialy save space in main memory via dynamic linking.
+
+3.)
+No idea, i assume a loader is obviously still necessary since we still have to load the program into memory, and maybe a linker is needed since we still need to interpret
+functions that come from standard libraries

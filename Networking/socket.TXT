@@ -1,0 +1,19 @@
+.A socket is a binding of an application to a port and an ip address, so when the OS recieves traffic on a certain ip address to a specific port it knows what process to send
+that data to
+
+.A socket can also be seen as an interface for the application layer of the protocal stack of the internet to interact with the transport layer, so it uses this interface to
+send and recieve data from the transport layer and the application layer needs to initialize this socket with the proper values so the lower layers know how to function (such as
+port numbers, ip addresses, protocals for layer 4 and 3 (transport and network layer respectively), etc)
+
+.Even if you set the network protocal of a socket to lets say ipv6, clients can still interact with that socket using ipv4 addresses, in my myssh project i configured the server
+socket to be a ipv6 socket and i give my client a ipv4 address which forced the client to send packets to the server using ipv4 and the server to send packets back in ipv4, 
+the 2 applications can still communicate and when the server tries to retrieve the ip address of client since we are using ipv6 sockets we get a ipv4 to ipv6 address instead
+of an ipv4 (im not sure this type of communication works the other way around though where a ipv6 clients interacts with a ipv4 server socket, probably would not work
+since for one their would be no way to retrieve the client ipv6 address since the server has to use the ipv4 socket api, and this support is only provided since we want to
+transition from ipv4 to ipv6 and having ipv6 support ipv4 helps with this)
+
+.the connect protocal binds a default recepient to the socket so you don't have to use the sendmsg protocal that takes the receiver as an argument, when using connect with tcp
+it blocks (assuming socket isn't set to non-blocking) till the receiving socket accepts since tcp guarentees a connection be established before communication begins, while with
+udp it does not block since it does not guarentee a connection to be establish so you can just start sending to the server right away (but if the server does not have a udp
+socket up you will never get a response unless the server firewall is kind enough to send you one, if not you application will be stuck in a void forever waiting for a response
+that will not come)

@@ -1,0 +1,60 @@
+we will be using C? (maybe C++)
+
+1.) use the sockets api to set up a connection with the client and the server
+
+2.) make the server be able to handle multiple clients (don't know what would be a proper algorithm for this, maybe a thread for each client but at the same time i read
+that this is not a good method)
+
+3.) set up an encryption library that will encrypt the packets we send back and forth between client and server
+
+4.) turn off line discipline on the client (so make a raw terminal), connect pty master of server sh process with the client process? 
+(refer to https://dev.to/napicella/linux-terminals-tty-pty-and-shell-part-2-2cb2)
+
+remove all line discipline (except for the one connected to our shell process), the server will start a process that will request for a pty and connect that to a sh process,
+server and client will communicate, client will encrypt, server will decrypt, then send to sh process, and encrypt and send result back to client
+
+can use forkpty for the server https://man7.org/linux/man-pages/man3/openpty.3.html
+
+want to make the server a daemon aswell, so a background process that looks for connections on a port, and when it finds a connection it uses forkpty to create a child with
+a new pty attached to it, that fork will call exec to change the process image to a shell (like sh), and will also change the user to the requested user of the client and prompt
+the client to enter a password for said user
+
+Server:
+
+1.) the server will function as a daemon and will have no controlling terminal and will work completely in the background (will only be able to terminate via a kill command)
+
+2.) the server will use sockets to listen onto a port that will take in client requests, when a request is made from a client the server will use the accept function which
+will create a new fd that the server can use for communication with the client, the client just uses the same fd socket
+
+3.) once a request is recieved the server will use one of the many existing multiple client handling algorithms
+
+4.) use forkpty to create a child that is connected to a pty (note this part needs some testing to see how forkpty actually works), note the forkpty will only happen after the
+client gives the server a correct password, once that happens server will fork a child
+
+5.) child needs to change the current user from root to the specified user from the client and then that said child will use an exec call to replace the process image with 
+a /bin/sh (dont know how to change user yet), to do this the child needs to await input from the parent that needs to prompt the client to enter a correct password for the
+user they specified
+
+6.) server waits for more input from the client (the server will use the master side of the pty that it gets as a way to read and write from the child)
+
+7.) server sends input to child process via the pty master
+
+8.) child processes data that is sent and sends it back through the pty slave and back to the master
+
+9.) server sends output back to the client and go back to step 6
+
+(note that all the information sent has to be encrypted, though this can be done and implemented after i get everything else working, should probably code the server first
+and test how it works with the server connected to a terminal and not a daemon)
+
+
+Client:
+
+
+
+
+
+
+
+
+
+

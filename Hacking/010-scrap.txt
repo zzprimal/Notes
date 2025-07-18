@@ -1,0 +1,5 @@
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+0xffffcf7c address of main ra
+
+python2 is a good method to give stdin in hex characters while still getting stdout during runtime, so python2 | <executable>

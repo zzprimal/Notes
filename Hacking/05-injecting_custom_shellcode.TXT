@@ -1,0 +1,16 @@
+First you need to use gdb pwndbg to find when we start overwriting the return address, then overwrite the return address with the location of a jmp esp instruction so that
+we can jump to shellcode we have written in the stack, then after that our IP will jump to our shellcode we have written on the stack, to get this shellcode we can use pwn
+shellcraft command which will give us machine code in hex for certain functionalities, in this case we get shell code for executing a shell terminal. then after that
+we when we run the program we use the following command...
+
+(cat payload.txt; cat) | ./server
+
+the extra cat is so that we don't close stdin when we do redirection so we can give actual input to the terminal shell when it replaces the process image of the server
+executable (running just cat with no arguments just makes it so everything we put in stdin just goes to stdout, in this case the stdout will be piped with the stdin of
+the server exectutable since thats what | does, so we connect the stdin of the cat call with the stdin of the server so stdin won't be closed). Where the payload will have the
+following format...
+
+junk (just to get to return address) + jmp esp location + nop slide (optional) + terminal shellcode from ropper
+
+note the nop slide is optional in this case, it is just there just in case the terminal shellcode has stack operations that will affect the shellcode itself (atleast im pretty
+sure this is why nop slides exist) and in the case of the i386 linux terminal shellcode the nop slide is unecessary

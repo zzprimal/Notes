@@ -1,0 +1,73 @@
+Data is sent over the internet via stacks of layers where in each layer is inserted a protocal which just are rules we abide to when we send data over the internet (in this 
+context it would just be what extra information do we have to send with our data, these are called headers), each layer has a responsibility or a task to perform and it uses
+layers that are above it to perform these tasks, the layers are as follows going from the lowest to the highest, the application layer, the transport layer, the internet 
+layer, the link layer, and the physical layer, and like mentioned before a protocal is inserted in each of these layers which will do the task that is assigned to the layer, 
+the protocals for a specific layer will do these tasks in different ways and will also encapsulate the data it gets from the previous layer in different ways aswell. We will 
+go over these layers from the lowest to the highest...
+
+Application layer:
+The application layer is directly related to the applications running on your computer and each application potentially has different methods and formats for data to be 
+encapsulated before it is sent to the transportation layer, an example of a format is http which is used to by google for example to request for html code for webpages, so
+when you go to a website with http in the url what is happening is a request is created using the http format and then sent towards the transport layer, some of the information
+(aka headers) that are added with the protocal are things like the type of document it accepts as a response and also the type of language that is acceptable (this is in the
+context of an http request). Another example of a protocal for this layer would be SMTP which is used for sending emails which includes header fields like name of recepient
+and name of sender. The job of this layer is to send the data from this layer to the Application layer of the other end system, it calls on the help of the transport layer to
+help perform this task.
+
+
+Transportion layer:
+The transportation layer is where its decided how our data will be communicated from the client to the server and the other way around. There are 2 protocals that are used 
+in the transportation layer (atleast these are the 2 main ones, any other ones if they even exist aren't really relevant to know about), TCP which provides a reliable 
+connection that guarentees your data to be delivered with a consequence being potential time and UDP which provides a fast connection that sends packets at fast speeds
+but at the cost of reliability meaning some packets can be lost and also at the cost of order meaning potentially the packets can be recieved out of order from the reciever.
+
+TCP is a protocal that guarentees 2 services that being a connection based service (the 3 way handshake) and a reliable data delivery service (guarentees data is delivered),
+the three way handshake works by setting up a three way handshake between the server and the client that requires each of them to send their ISN to eachother and then acknowledging they have
+recieved this by sending a packet back, the sending of the ISN is so that they are able to organize the order of the packets after they are sent and the acknowledgement is so
+that the sender knows the reciever is ready and will be able to put these packets in order, after this handshake is done packets are sent back and forth with each data packet
+being sent the reciever checks if the data is corrupted via checksum, and then sends back a ACK packet to acknowledge this has been recieved, if the sender does not get back 
+a ACK packet for a specific packet it will resend that packet because it is possible for the reciever to not have gotten it (note if a reciever has not gotten a packet you 
+may ask the question why not just send a packet to request for a resend, this is not a good strategy because this packet itself is not guarenteed to reach the sender and 
+then another resend would be required and would just spend unnecessary time waiting for a single packet, so its just better to have the sender just resend the packet if it 
+has not recieved an ACK). What is the purpose of the three way handshake though??? Well first of all it makes sure that the 2 parties are able to communicate with eachother 
+(meaning they are able to send data packets to eachother and send an ACK packet when they recieve a packet) and like i mentioned before it is also to exchange ISN with 
+eachother, the purpose of this is that so we can give proof that we recieved the packet since after a recepient recieves a SYN packet with the sender's ISN since this 
+number is random sending back this number +1 acts as proof that this packet was recieved.
+TCP format: https://www.ibm.com/docs/en/zos-basic-skills?topic=4-transmission-control-protocol-tcp
+Why Does TCP Need A Three Way Handshake?
+The three way handshake works by sending a SYN message from client to server, SYN/ACK from server and client, and ACK from client to server, like mentioned before we need the
+2 SYN to transmit ISN to eachother, but do we really need the final ACK? The answer is yes the ACK acts as acknowledgement of the fact that the client received the server's
+SYN so the server can send packets to the client, but if the client responds with another SYN message won't that be equivalent to knowing that the server's SYN message was never
+received and couldn't we use that as a method of determining whether or not the client received the server's SYN (if the client doesn't retransmit SYN it has received it, if
+it does it hasn't received it), well the problem is determining how long to wait to determine the client is never going to send another SYN and has hence received the SYN segment,
+packet delays can theoretically be infinitely long if packet loss keeps happening so there is always a chance that the server can determine the client has received its SYN
+after a certain period of time if we use this method when in reality it hasn't, this will cause the connection to only be half established and so the server can't communicate
+with the client (ACKS SHOULD ONLY HAPPEN ON THE PRESENCE OF DATA NOT THE LACK OF IT)
+
+UDP unlike TCP is just usually uni-directional communication and doesn't require any setup like TCP it just sends out packets as fast as possible without worry as to whether
+the packets will arrive or the order the packets arrive in, the sole goal of UDP is just to send data as fast as possible. UDP usually works really well for things that
+require the data fast but do not require all the data sent to work properly, things like video streaming, video games, stuff like that where the most important thing is
+sending the data as fast as possible.
+UDP format: https://www.ibm.com/docs/en/aix/7.1?topic=protocols-user-datagram-protocol
+
+Internet/Network layer:
+The Internet layer is responsible for encapsulating the packets from the Transport layer into IP packets so that they can be sent to their proper destination by adding header
+information like the destination IP and source IP address so it is known where we are sending our packet to and where to send a response packet back to aswell. There are 2
+main types of protocals used in this layer (there were more in the past but aren't relevant anymore so we won't talk about them) them being IPv4 and IPv6 which are pretty 
+much exactly the same except for the fact that one uses 32 bit IP addresses and the other uses 64 bit IP addresses for its fields.
+
+(for traveling long distances to switches of up to layer 3)
+
+Link layer:
+
+
+note ports don't actually exist they are just numbers that are given in the transport protocal, when the OS (or the transportation layer) reads this destination port it is 
+able to determine which process / application layer this packet belongs to and give it to them
+
+(link layer is for traveling short term distance to switches of up to layer 2)
+
+
+
+usually there are 5 stacks of protocals that our data has to go through, an
+application protocal, a transport protocal, a internet protocal, a link protocal, and a physical protocal (these are usually called layers instead of protocals, will use 
+interchangably), note that ,we will go over each of these protocals seperately

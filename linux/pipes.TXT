@@ -1,0 +1,2 @@
+.pipes are used for unidirectional communication between processes, names pipes (fifos) are used for communication between processes with nothing incommon, while unnamed pipes
+are used for communication between processes that are related to eachother (child and parent processes usually)

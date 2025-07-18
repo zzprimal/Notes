@@ -1,0 +1,5 @@
+.fifos block till both ends of the pipe are open (one for read and one for write), if both sides of the fifo are open 2 processes can communicate with eachother in one direction,
+one process reads and the other writes, if the read end closes and then the write end tries to write a SIGPIPE signal will be sent to the writing process, if the write end
+closes it will set the EOF indicator of the FIFO at the end of the file so that the read end will run into it if it tries to read anymore
+
+.all the hex that is writen to the fifo is deleted after it is read by a process

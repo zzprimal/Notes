@@ -1,0 +1,5 @@
+.on windows you can make dns lookups via the nslookup command and specify the type of resource record by going into interactive mode and typing "set type=MX" for example, on
+linux you can make dns lookups aswell using the dig command, the dig command also allows you to trace the history of your dns lookup by turning off recursive mode and having
+a dns server send back the next dns server (either a tld or authoritive) in the chain that will allow you to get the resource record you want, this is done via adding the
++trace command so an example would be "dig amazon.com A +trace" to get the type A resource record (so ip address) for amazon.com and +trace means trace the path your request
+takes

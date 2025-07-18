@@ -1,0 +1,5 @@
+Chapter 2:
+.Segments can be thought as pages except usually much longer and organized so that the data inside each segment is relevant to eachother, segments are stored via segment numbers
+via specific registers and the virtual addresses for these segments can be got via 2 methods, in real mode where we shift the segment numbers by 4 bits to the left to get the 
+virtual address and by protected mode which is just a virtual memory system which maps segment numbers to arbitary virtual addresses and also provides protection bits to each
+segment

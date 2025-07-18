@@ -1,0 +1,3 @@
+unicode is a character encoding for characters on machines, there are smaller character encoding protocals and there are bigger character encoding protocals with the smaller
+ones being a subset of the bigger ones, for example ascii is a character encoding that is a subset of utf-8 which is a subset of utf-16, on windows you can type these character
+via the number pad and holding alt then pressing plus and typing the decimal value of the character encoding and making sure to zero extend this value to 4 digits

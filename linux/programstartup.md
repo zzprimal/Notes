@@ -1,0 +1,2 @@
+# _start
+On Startup of a program the entry point is not tbe main function but a function called "_start" which is a function that sets up everything to prepare for the call to main so everything can work properly

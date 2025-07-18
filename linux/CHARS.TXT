@@ -1,0 +1,11 @@
+Carriage return:
+moves the cursor back to the start of the current line, when you press enter on the keyboard (which usually signifies newline if you have ICRNL on) instead of line discipline
+just sending back a newline it also sends back a carriage return (so "\r\n") to put the cursor back to the start, this is called the OPOST setting and is an output setting for
+line discipline
+
+Line feed: 
+moves your cursor down to the next line, this character in linux is usually now used as a EOL character which signifies the end of a line which causes the buffer in the
+line discipline to be cleared and sent to a process
+
+Feed forward:
+advances your cursor down a page so everything that was displayed before can't be seen and now you have to scroll up to see it

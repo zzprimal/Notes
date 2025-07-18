@@ -1,0 +1,37 @@
+python2 -c "print('\x0c\xc0\x04\x08\x0e\xc0\x04\x08' + '%51384x' + '%4\$hn' + '%12036x' + '%5\$hn')"
+
+This ctf challenge requires us to overwrite the GOT entry for printf with the location of the system function in the libc library to solve it, note this challenge we will assume
+aslr is disabled so we don't need to leak the base of the binary or the location of the libc library (though this can be done with format string vulnerabilities pretty
+easily aswell, just a matter of guessing what value is the return address to main). We are also working with x86 and not x86-64.
+
+Step 1:
+get the address of the got printf entry and the location of the system function in your virtual address space after the dynamic linker maps libc into memory, this can be
+done pretty easily by calling "objdump -d -j .plt got_overwrite", this will disassemble the text in the plt, the first line of code in the printf@plt will be a jump into its
+data entry inside the got.plt, the address that is being dereferenced here will be our printf@got.plt location. For system its easy aswell, just leak where the base of libc
+is going to be via a ldd call, then check where the system offset is inside of libc by calling "readelf -s <libc path here> | grep system" then by adding the base and the
+offset together to get an address
+
+Step 2:
+call got_overwrite and find what num you have to give in the format string %<num>$p to get the location of the buffer you are writing to when you give stdin, this can be 
+done by typing AAAA%<num>$p and guessing random nums till you get the ascii encoding for the 4 A's
+
+Step 3:
+with these steps out of the way we can create our payload, first split the pointer to the printf@got.plt entry into two short pointers (we will be rewriting the entry
+in half words), then set the first part of our payload to be the pointer to the least significant end, then the next part to the the most significant end (the ordering
+does not matter, you can change your payload to work for either order), next we need to pad so that the amount of characters that are typed by printf is equal to what we
+want to write in the lower half word of printf@got.plt, so take the lower half word of the system address and minus that by 8 (already typed 8 characters that being the
+addresses), convert that to decimal and add %<value>x to our payload for padding, then add format "%<num>\$hn" where num is the value we got in step 2 (the start of our
+buffer), this format replaces the contents inside the pointer specified in the argument (argument is determined by num) with the amount of character written, if done correctly
+we would have written the proper value in the least significant pointer for printf@got.plt
+
+Step 4:
+repeat step 3 except with the most significant pointer for printf@got.plt, for padding we use the most significant short minus least significant short for the system 
+address (since the amount of padding we used for the least significant pointer for printf@got.plt is the least significant short for the system address, so we just need to
+add what is leftover) then add that num to the specifier %<num>x for the padding, then same as in step 3 we use "%<number>\$hn" format except number in this case should be
+number = num + 1 where num is the value for the previous %\$hn format specifier in step 3, we do this because the most significant short pointer for printf@got.plt is one over
+from the lead significant short pointer
+
+Step 5:
+and we are done, giving this payload to our executable with a "(cat payload.txt; cat) | ./got_overwrite" call (extra cat is so we don't give EOF to stdin with regular input
+redirection) will give us shell access, now whatever we type will be given as an argument for a system call which will fork a child that will call /bin/sh -c and execute
+whatever command we have specified, with this all we need to do is "cat flag.txt" and we are done, and that's the end of these notes

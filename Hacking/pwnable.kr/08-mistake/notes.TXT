@@ -1,0 +1,2 @@
+.bad precedence when opening file which causes reading from stdin as opposed from password, our password has least significant bit xored and since strncmp implies we
+need to correctly match 10 characters CCCCCCCCCC and BBBBBBBBBB works as input and we get the flag "Mommy, the operator priority always confuses me :("

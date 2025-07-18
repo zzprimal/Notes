@@ -1,0 +1,30 @@
+connect to mail.mcsnet.ca using telnet on port 25 (if it doesn't work try one of the secure ports)
+
+helo
+auth login
+cmFnb3Npbg==
+<base 64 encoding of email password>
+MAIL FROM:<ragosin@mcsnet.ca>
+RCPT TO:<ragosin@mcsnet.ca>
+RCPT TO:<devonragosin@gmail.com>
+DATA
+From: ragosin@mcsnet.ca
+To: ragosin@mcsnet.ca
+To: devonragosin@gmail.com
+Subject: From telnet
+
+This is from telnet
+.
+
+GET /kurose_ross/interactive/index.php HTTP/1.1
+Host: gaia.cs.umass.edu
+If-modified-since: Tue, 6 Aug 2024 13:34:24 MST
+
+
+GET HTTP/1.1
+Host: google.com
+If-modified-since: Tue, 6 Aug 2024 13:34:24
+
+GET /fruit/kiwi.gif HTTP/1.1
+Host: www.exotiquecuisine.com
+If-modified-since: Mon, 5 Aug 2024 13:34:24

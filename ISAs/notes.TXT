@@ -1,0 +1,57 @@
+x86 architecture:
+
+get_pc_thunk_??:
+. loads the current instruction location in the ?? register so that global varibles (or global offset table) can be accessed by relative addressing using that ?? register
+. necessary since the x87 isa does not allow explicit reference to the IP register so it abuses the fact that function calls save the instruction we left off of in the stack
+. x64 allows referencing of IP in instructions so it isnt necessary
+
+.caller will add the parameters of a function to a stack, the order of the elements that are added to a stack when a function is called is parameters, return address, block
+pointer, then the local variables of the function that is called. When we return from a function we call the leave instruction to restore the stack pointer and the block
+pointer to their former states, then we call the ret instruction to go back to the instruction inside the stack pointer (stack) pointer will be pointing to the return address
+
+.if we're manipulating the return address to control what function our program goes to next the parameters would just be right above the stack pointer at a higher address,
+when we call a manipulate return address to call a different function the former return address will be overwritten by the former block pointer address, above the former return
+address will be the new return address for the function call we manipulated (can be just junk if we dont care about a proper return), and above that will be the parameters 
+for this new function
+
+.sizeof long is 4 bytes, the long type will always be the size of a word (aka register size) in the corrosponding ISA architecture
+
+.mov instruction can be used to move data between registers or memory locations where memory locations can be dereferenced via brackets (example using at&t syntax would be
+"mov -0xc(%ebp), %eax" first dereferences %ebp - 0xc and puts the value into the register %eax, if we had "mov -0xc(%ebp), (%eax)" the dereferenced %ebp - 0xc would be stored
+in whatever address %eax is pointing to), while the lea instruction is responsible for loading a memory address into a register where the first argument specifies a mem address
+(this is never dereferenced) and the second argument specifies the register to put it in (an example would be "lea -0xc(%ebp), %eax" which stores the address %ebp - 0xc at %eax
+, something to note is that this instruction can probably just be implimented via mov instructions aswell by moving %ebp into a dummy register, subtracting 0xc from that register,
+then moving that register value into %eax, so we would have for example "mov %ebp, %ebx", "sub $0xc, %ebx", "mov %ebx, %eax", we have no brackets for mov since we never dereference)
+
+
+x64 architecture:
+.caller will add parameters to registers and then the calle will add those parameters to the stack
+
+.allows explicit reference of IP
+
+.sizeof long is 8 bytes, the long type will always be the size of a word (aka register size) in the corrosponding ISA architecture and unlike x86 size of register is 64 bits
+
+.stack frame starts with return address, former block pointer, then parameters and then local variables, block pointer will always be pointing to the former block pointer
+with the return address directly above and leave instruction and return is the same as x86
+
+PLT (or in binary just called .plt):
+.the program linker initalizes entries with some code that will jump to the corosponding entry in the GOT table, if we did not call this function before this entry will contain
+a jump to the dynamic linker that will update the entry in the GOT to contain the new virtual address of the function we are calling that we added to our virtual address space
+
+
+GOT (or in binary just called .got.plt):
+.this is a table that contains locations of symbols in the virtual address space, if the entry is not in the GOT yet the entry contains a reference to the
+dynamic linker to update it (specifically it contains the virtual address of the next instruction of the corrosponding entry in the PLT which contains instruction that are used
+for lazy linkage by executing the last 2 instructions in the PLT entry, then jumping to the head of the PLT and from there it goes to a dynamic linker function to update the
+GOT entry), how we access the got depends on whether we are executing a PIE (Position Independent Executable) or not, if we are then we have to access the 
+GOT by position independant code which means via relocatable addressing which means we use an offset from the IP in the PLT to access the GOT, if not a PIE then memory addresses
+stay the same and we just access the GOT by absolute addressing using a constant address every time we run the program, note that the position of the GOT is usually kept in the
+bx register
+
+PIE:
+.stands for position independent executable, depending on whether our executable is position independent will cause our program to address via absolute or relocatable addressing
+, example is in the PLT, if it is a PIE we will use relocatable addressing by using the IP to get the GOT location and then another relocatable addressing call to get the
+corrosponding entry, if it is not a PIE we will just use absolute addressing and call the entry in the GOT directly
+
+
+

@@ -1,0 +1,3 @@
+Linking is the process of combining object files to create other object files, linking really does these main things, one is relocation which is the process of taking
+data and code from the object files and organizing them and giving them new load addresses, next is symbol resolution which is giving references to symbols the new proper
+pointers to the actual symbols location (symbols are named objects in the source code that the programmer defined, can be functions to variables and even more).

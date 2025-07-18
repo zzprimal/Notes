@@ -1,0 +1,9 @@
+process ID: a number that is used as a unique identifier for processes
+
+process group ID: a number that is used as an identifier for a group of processes
+
+session ID: a number that is used as an identifer for multiple groups of processes, each session can be given a controlling terminal
+
+user ID: a number that is used as an identifier for the user that is logged in
+
+user group ID: a number that is used to group multiple users together into a group

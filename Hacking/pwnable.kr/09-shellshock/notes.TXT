@@ -1,0 +1,10 @@
+shellshock was a bug that existed within bash for about 25 years from 1989 and was only discovered in 2014 that allows RCE on machines that use bash such that the attacker
+has control of the environment variables given to the bash interpreter, things like webservers which use CGI scripts were an example of this and an attacker can gain RCE on
+these webservers via giving payloads via http headers since those http headers become environment variables in the bash interpreter. The cause of this bug is allowing environment
+variables to contain function definitions then preceding that function definition with the code you want to inject, during parsing of the environment variable to determine if it
+it is a function or not there was a error in the source code for bash that caused any code after the function definition to be executed hence RCE can be attained if the attacker can
+control the environment variables, there were 2 vulnerabilities that were discovered as a result of this error first one being specified in CVE-2014-6271 and the second being
+specified in CVE-2014-7169, the variant we are dealing with in the capture the flag is the first version, this can be tested by executing the command
+"env x='() { :;}; echo vulnerable' ./bash -c "echo this is a test"" and sure enough vulnerable is echoed back so the bash binary in the /home/shellshock is vulnerable to shellshock
+which is also the shell that is called in the shellshock binary, then getting the flag is simple via doing the command "env x='() { :;}; /bin/cat flag' ./shellshock" and we're done
+and the flag returned is "only if I knew CVE-2014-6271 ten years ago..!!" (equivalently you can also do "export x='() { :;}; /bin/cat flag'", then just execute "./shellshock")

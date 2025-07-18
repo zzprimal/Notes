@@ -1,0 +1,20 @@
+python2 -c "print('./input' + '' + '')" | /bin/sh
+
+
+./input a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a "" $' \n\r' a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a
+
+
+(this command got me past stage 2 and into 3, am stuck at 3)
+echo -e -n "\x00\x0a\x00\xff\x00\x0a\x02\xff" | (./input a  a  a  a  a  a  a  a  a  a  a  a  a  a  a a a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a a a  a  a  a  a  a  a  a "" $' \n\r' a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a  a a  a  a  a  a 2>&0)
+
+(2>&0 does not count as a command line argument for some reason)
+
+it is impossible to pass this ctf via exclusively using shell commands, instead you have to create a script to pass this ctf, but how do you create a script on a machine where
+you don't have a home directory, we can use the tmp directory for this to create a temporary file that we can use to get the flag, the script used to get the ctf is in script.c
+which will get you pass the first 4 stages, then using the connect.c script to connect to the socket created in stage 5 will get you pass stage 5 but this still won't get you
+access to the flag since the current working directory is now the directory you created in tmp and not /home/input2 where the flag is located so "/bin/cat flag" now returns
+error, we can't change the current working directory in our script or else stage 4 fails and we can't copy the flag to our temporary directory since we don't have the proper
+permissions, the way to fix this is via symbolic links which you can create in the temporary directory via "ln -s /home/input2/flag", after doing this we can get access to the
+flag which is "Mommy! I learned how to pass various input in Linux :)", the temporary directory i created to do this work is /tmp/myfolder if i want to go back and assuming they
+configured the OS not to do scheduled clears of the tmp folder which is likely looking at the size of it
+

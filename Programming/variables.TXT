@@ -1,0 +1,42 @@
+These notes describes the 4 characteristics of variables and/or functions in C, linkage, scope, lifetime, and type, here we will give the definition and types of each
+
+############################################################################
+linkage:
+refers to what variables or functions can be refered to in the source code by outside object files during the linking stage
+
+external linkage: means that a variable or function can be refered to by outside object files, when you declare a global variable without keywords this is the default option
+
+internal linkage: means that a variable or function can only be refered to by code inside its translation unit (aka object file) and not by other translation units, to make
+a variable or function have internal linkage you have to use the static keyword (note static usually just refers to the lifetime of the variable but in C and C++ it also
+defines the linkage when we declare a global variable), internal linkage implies having global scope inside the variable's resident source file, but the implication does not go
+the other way since having global scope can also mean external linkage
+
+no linkage: means that a variable or function can't be refered to by outside object files, or other source code inside its own file, examples of this are stack variables for
+example
+
+############################################################################
+lifetime:
+refers to how long a variable stays alive in the virtual address space of an active process before it is deallocated and used for something else, really only a concept that 
+applies to variables as since for functions will alway have a lifetime equal to that of the process (aka static)
+
+static lifetime: means the variable will last for the lifetime of the process, global variables will have a static lifetime and also all variables declared with the static
+keyword
+
+local lifetime: means the variable will last only for the scope it is in, stack variables have a local lifetime
+
+############################################################################
+
+scope:
+refers to where a variable can be refered to, scope is a concept that is similar to linkage except that scope is specific to inside a single translation unit while linkage
+refers to all translation units used in linking
+
+local scope: means that the variable can only be accessed in a certain section of the source file, usually variables denoted inside of curly brackets denote a local scope
+inside those brackets
+
+global scope: means that the variable can be accessed anywhere inside the resident source file
+
+############################################################################
+type:
+refers to how a variable is stored into memory, how much memory it takes up, and how to read it when it is referenced, for functions it refers to what type of data it returns
+
+############################################################################

@@ -1,0 +1,24 @@
+aslr: is responsible for randomizing sections of the code
+
+pie: means that our code can be executed regardless of where it is located in memory, this allows aslr to do randomize these sections aswell (pie does not do the
+randomization)
+
+for this ctf we assume we have full shell access as a guest user, the flag is owned by root so we cannot leak this with just a cat
+
+goal: leak the base of libc and use that base to calculate the location of system and /bin/sh and use that to get root shell access, to do this we need to link the base of the
+binary (the pie base) so we can get access to the global offset table and leak a function location that is inside libc.
+
+plan: for now assume that pie is dissabled, we will use a pop rdi gadget and put in the address of some libc function (puts for example), and then we will set the return address
+to be the puts stub inside the plt which will leak the location of the puts function inside libc, then we subtract the offset which will get us the base of libc which we can
+use to calculate the location of the system function and /bin/sh and get us shell access. First we need to use format string vulnerabilities to leak the base of our binary
+(the pie base). In this case the easiest method since the format string vulnerability is located inside a function that is called by libc is to use format strings to leak
+addresses on the stack till we find one that looks like the return address to main since this is an already known offset we can use to calculate the base of the binary,
+to do this we leak a bunch of addresses on the stack and we can use process of elimination to find the ones that probably refer to addresses in the text segment (usually
+hex starts with 55555). Once we find the main return address (in this case its located at argument 15 or %15$p) its easy to find the base of the binary by subtracting the
+offset, and from there we can calculate the addresses of the gadgets we need to leak a libc function address.
+
+problems: the problem with leaking the address of a libc function using a global offset table with puts is that we can run into segmentation fault as a result of a lack
+of a null terminating character in a virtual address, when i tried doing this challenge by myself using shell commands im pretty sure this is the problem i ran into since i
+got a SIGSEGV as a return value, but at the same time the python script that is given as a solution does not run into this problem and gives you a root shell so its possible
+this might not be a reason why i got a SIGSEGV, but this is still a problem with this exploit outlined in this video and can be potentially a problem ran into the future
+if your string runs into a page that is non-readable before it runs into a null terminator.

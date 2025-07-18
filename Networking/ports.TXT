@@ -1,0 +1,2 @@
+.Ephemeral port are ports that are only used for a short period of time, usually these ports are the ports from 49152 to 65535 and the rest are well known or registered ports
+that are used by well known applications

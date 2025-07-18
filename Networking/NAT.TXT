@@ -1,0 +1,15 @@
+.Nat is a solution to the ipv4 shortage crisis we face in the internet, it allows multiple devices to have a ip address without using more than 1, this is done by creating
+a local network that has its own ipv4 addresses, usually this is how home networks are implemented, home networks have 1 ipv4 address which is called your public address
+and is the address of your router in the context of the internet and this router gives you a private ipv4 address which is only relevant or useful in your home/local network,
+to interact with devices outside your local network you have to use your router as a gateway and your router will forward your message for you to the destination
+
+.Pat is a subset of Nat that solves the problem of figuring out which device in your network your router should be sending a packet to and it does this via port binding, when
+your device sends a packet to a device outside your local network first your packet recieves it and looks at the network layer to get the source ip address and the transport 
+layer to look at the source port (nat routers atleast using pat can unroll all the way to the transport layer in this case, usually normal routers in the internet that
+acts as switches can only unroll to the network layer), and it binds these 2 to a single free port number on the router which it then stores on a table, then it replaces the
+source port of the packet with this port that the router has used to bind to the sending machines source ip and port and it also replaces the source ip address with the public
+ip address of the router and sends the packet, so when the router recieves a packet back as response from the recieving server it just needs to look at the destination port
+and then use that port number to get the ip address and port number of the device that is supposed to recieve this packet on its local network, so it replaces those fields
+with the proper ones and sends the packet to that device
+
+.In a private networking the with a /24 subnet the .255 address is the broadcast address for addressing every device on the subnet, and the .0 address is the subnet identifier

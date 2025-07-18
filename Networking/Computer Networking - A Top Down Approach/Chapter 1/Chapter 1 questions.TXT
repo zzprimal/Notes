@@ -1,0 +1,386 @@
+Section 1.1:
+
+R1:
+Hosts and end systems are synonyms meaning they are the exact same thing, hosts/end systems are just devices that are on the recieving or the sending end of packets meaning
+there is an application on this device that is sending a packet, or waiting to recieve one (Note usually these are split up into 2 types, that being servers and clients). 
+An example of some of these systems would be computers, servers, video game consoles, etc. A router for example would not be considered an end system because a router is just
+and intermediate point that is used to send the packet to its ultimate destination and not the actual destination itself. A good anology to thing about this is via delivery
+services where a delivery driver is delivering the contents of one building to another building, the building are analogous to the end systems/hosts, the roads are analogous
+to the communication links (ethernet, radio signals, etc), and the intersections are analogous to packet switches (routers for example). A web server would be considered an
+end system because it is the destination for get packets (specifically packets using the https protocal to fetch the html file for a website so a client can load said website).
+
+R2:
+The wikepedia article for diplomacy protocals describes them as a set of courtesy rules that people follow to show respect, it can also be thought of as a ceremony that is
+related to the relationship between nations
+
+R3:
+Because if machines don't use the same protocals two machines that communicate using different protocals will interpret bits recieved in a completely different way than
+what was intended by the sending machine, a good way to think about this is some protocals we abide to and the consequences when we don't abide to them, think about what you do
+when someone waves back to you, the standard protocal would be to wave back at the individual, if we don't abide by this protocal a consequence would be that person possibly
+thinking of you as rude. In computer networking the consequence of not abiding to the protocal of another machine would be the compete misinterpretation of bits that it recieved
+, an example would be lets say the protocal of the sending machine makes it so that the first 4 bytes it sends encodes the type of data it sends and the rest is the data 
+itself, but the recieving end uses a different protocal where it reverses this order and the last 4 bytes encodes the type of data and the rest is the data itself, this will
+cause complete misinterpretation of the bits that were sent and an unintentional message would have been sent to the machine, and this is why them using the same protocals is
+necessary. tldr it is necessary so that 2 machines can interpret data that is sent between eachother in the way that is meant to be interpreted
+
+
+Section 1.2:
+
+R4:
+Access technologies are technologies that areas or users use the access the internet all over the world creating local networks with a gateway that acts as the point where the 
+internet is accessed, we will go over the following 4 access technologies, 5G, DSL, ethernet, and FTTH and label them as home, entropise, or wide-area wireless access (possibly
+assigning multiple labels)
+
+5G: 5G is a wide-area wireless access technology that uses 5G towers to recieve and send radio signals from and to devices that are connected via 5G, this is considered a
+wide-area wireless access technology since everything is done completely wirelessly, you communicate with your gateway (the 5g tower) completely wirelessy, some homes have
+implemented their access to the internet via 5G aswell so this can be considered home access aswell using modems that can recieve these radio signals from these towers and
+then using a wireless router to create a home network. 5G is also considered a technology that areas and users both use to access the internet.
+
+DSL: DSL is a home access technology that uses the homes telephone company to access the internet via using the telephone companies telephone lines to send and recieve data
+for internet use and uses the telephone company's already existing gateway to the internet as an access point, this is done by again installing modems that send data on the
+telephone line at different frequencies than the resident home phones so data can be differentiated and connecting a router to that modem for wireless access. Homes are 
+really the only areas where this technology would be used so this goes under just the label of home access and this is technology that areas use to access the internet and
+not users, users would use ethernet or wifi to connect to their home network that is connected to the internet via DSL technology
+
+ethernet: Ethernet is term that is meant for user access technology via physical wires and is used for home and etroprise access to the internet for the user with users at 
+home connecting ethernet cables to their router and users at entroprises connecting ethernet cables to ethernet ports which are connected to ethernet switches (possibly many)
+which all connect to the router which uses a area access technology to connect to the internet
+
+FTTH: FTTH is just a acrynomyn for fiber to the home and is a area access technology that is used to connect your house to the internet using fiber technology which sends
+data via light and then the user again connects to the internet via wifi from the wireless router or ethernet via a ethernet cable to the router, i guess this could be also
+considered under entroprise access since the entroprise can use fiber technology to connect its local network to the internet and again users use ethernet or wifi to connect
+to the local network
+
+R5: 
+Yes it is shared among user, HFC uses a single coxial cable that branches out to connect to homes and give them internet internet, so data from these homes have to travel
+through this single shared cord to access a fiber node which then uses fiber to get to the cable company's CMTS (cable company's modem) and then use the cable company's
+gateway to the internet. But since this coxial cable is shared all downstream trafic is sent to all homes and all upstream trafic has to share the bandwidth of the coxial cable
+. Collisions are not possible in this system since these cable companies use certain protocals that allow it so multiple users can share this coxial wire and not get data
+mixed up with one another.
+
+R6:
+Im just going to go over my ISP in daysland (MCSNET) and what i think they use as access technology, from what i observed it seems the use a satellite dish that recieves
+radio signals as the access technology to access the internet that probably recieves from the internet tower in the middle of the town and then uses some other access
+technology to access a gateway to some bigger ISP's network/the internet. On their website they advertise a download speed of 100mb/s and a upload speed of 20mb/s with
+prices for plans varying with the maximum amount of traffic they allow you for a month (They also offer fiber internet in some parts of rural alberta now which is 
+something i did not know).
+
+R7:
+Assuming that twisted copper wires are used it is mentioned that data rates can go from 10mb/s to 10gb/s with the data rates being higher and lower depending on the thickness
+of the wire and the distance between sender and reciever
+
+R8:
+Ethernet just means to connecting to the internet using any physical medium that is guided, for example copper wire, coxial wire, or fiber optics are some mediums that are
+guided
+
+R9:
+HFC: HFC like mentioned before shares the transmission rate for the coxial wire that branches off to each of the homes and the textbook mentions transmission rates of 
+40 Mbps and 1.2 Gbps for downstream, and 30 Mbps and 100 Mbps for upstream for DOCSIS 2.0 and 3.0 standards respectively
+
+DSL: DSL shares the transmission rate of the link from the splitter to the DSLAM modem with its home phone, so if someone is on a phone call while someone else is using
+the internet the transmission rate will be split between the 2, other than that though the link is comepletely dedicated unless that household is sharing that telephone line
+with another household, the transmission rates are said in the textbook to include downstream transmission rates of 24 Mbs and 52 Mbs and upstream rates of 3.5 Mbps and 16 
+Mbps
+
+FTTH: FTTH shares the transmission rate of the link from the splitter to the OLT modem with other households, the link from each household to the splitter though is comepletely
+dedicated to that household, the transmission rate is said to be Gb/s (this is pretty vague but is all thats mentioned in the textbook), but this also depends on whether PON
+or AON is used im pretty sure
+
+R10:
+Wifi, 3G, LTE 4G, and 5G are the ones mentioned in the textbook, Wifi is just user access short range wireless connections and do not provide anywhere near the range as the
+other 3 since Wifi was only meant to be a wireless connection for your home network while the other 3 are meant for you to be able to use anywhere (and the other 3 can be
+extended to be used for area access to the internet while Wifi has nowhere near the range for that). Other than the difference between Wifi and the other 3 there aren't that
+many more differences between 3G, LTE 4G, and 5G other than increasing download speeds
+
+
+Section 1.3:
+
+R11:
+it would be L / min(R1, R2) since the total transmission time to the end host would be bottle necked by the minimum transmission rate and from there we just use basic unit
+manipulation to isolate the time unit and we get the total time (this is assuming obviously there is no processing, queuing, and propogation delay since if these do exist
+obviously the value would be much different)
+
+R12:
+Circuit switching gives exclusive access to links for certain connections while Packet switching does not and treats every connection equally and puts each one in a queue,
+so situations where Circuit switching is better are situations where a certain connection must be prioritized over other connections and packet loss cannot be tolerated, so
+an advantage over circuit switching would be consistency in how long it takes to recieve packets and no packet loss from an overfilled buffer inside a router or link layer
+switch. Unfortunately im not a physics student so i don't understand much of the inner workings of FDM and TDM but i read that one of the disadvantages of FDM is that
+signal mixing can happen if the frequencies for the connections are to similar and other than that im not to sure of the cons and pros.
+
+P6:
+
+a: would be m / s
+
+b: would be L / R
+
+P8:
+
+a: 50 since 50 * 200kbps = 5 * 10 * 200kbps = 10 * 1000kbps = 10000kbps = 10mbps so 50 users share the 10mbps link equally
+
+b: let their be n users, the the probability that atleast 1 user is transmitting is 1 - 0.9^n
+
+c: we know that there are 120 choose n possible combinations for users so we get (120 n)* 0.1^n * 0.9^(120 - n) where (120 n) is 120 choose n
+
+d: let there be n users, if n is less than 51 then obviously this chance is equal to 0 since we don't have enough users, if n is greater than or equal to 51 then we can
+use the binomial theorem to calculate this probability, so we get...
+
+sum(i, 51->n, (n i) * 0.1^i * 0.9^(n - i))
+
+P10:
+recall end to end delay is sum(i, 1->N, d_proc^i + d_que^i + d_tran^i + d_prop^i) where N is the amount of switches/links, since queuing delay DNE this gives us...
+
+sum(i, 1->3, d_proc + L/R_i + d_i/s_i)
+
+where d_tran^i = L/R_i and d_prop^i = d_i/s_i, applying this formula to the values specified in the second part of the question we get...
+
+sum(i, 1->3, d_proc + L/R_i + d_i/s_i) = sum(i, 1->3, 0.003 + 1500/2500000 + d_i/(2.5*10^8)) 
+= (0.003 + 1500/2500000 + 5000000/(2.5*10^8)) + (0.003 + 1500/2500000 + 4000000/(2.5*10^8)) + (0.003 + 1500/2500000 + 1000000/(2.5*10^8))
+= (0.003 + 3/5000 + 5/(250)) + (0.003 + 3/5000 + 4/(250)) + (0.003 + 3/5000 + 1/(250))
+= 3*(0.03 + 3/5000) + 1/25
+= 0.09 + 9/5000 + 1/25
+= 0.1318s
+= 131.8ms
+
+P11:
+Assuming the time at each switch is negligable (the traffic intensity at each switch is exactly 1 and since there is no processing delay the queue for each link should never
+grow) we have then L/R + d_1/s_1 + d_2/s_2 + d_3/s_3 + 1/R + 1/R where L/R is the time it takes for the sending host to send the last bit, the d_i/s_i values are the propogation
+time, and 1/R is the time for the remaining 2 switches to send said bit (since the processing delay is 0 and the queue never grows this means right when we get to a switch
+it should immediately start transmitting the bit onto the proper link)
+
+P12:
+if x bits have already been transmitted then L-x bits remain to be transmitted for the current packet so we have (L-x)/R time left to transmit the first packet, for the other
+packets there are n - 1 of them so we have (n - 1)(L/R) as the time to transmit all of them, so we have for our final equation...
+
+f(n, L, R, x) = (L - x)/R + (n - 1)(L/R)
+
+Plugging this into what we have earlier we get...
+
+f(6, 1500, 2500000, 750) = (1500 - 750)/2500000 + (6 - 1)(1500/2500000)  = (750 + 5*1500)/2500000 = 8250/2500000 = 0.0033s = 3.3ms
+
+P13:
+
+a: would be summ(i, 0->N-1, i*(L/R))/N = (L/(RN))*summ(i, 0->N-1, i) = (L/(RN))*summ(i, 1->N-1, i) = (L/(RN)) * ((N-1)N/2) = L(N - 1) / 2R seconds
+
+b: should be the same that being (L/(RN)) * ((N-1)N/2) = L(N - 1) / 2R seconds since if this happens n times then the denominator n and the numerator n cancel out and we
+just get the same equation as we did in part a
+
+P14:
+
+a: we are already given queuing delay which is (IL/R)(1 - I) and since transmission delay is just L/R we have (IL/R)(1 - I) + (L/R)
+
+b: in terms of L/R we have (IL/R)(1 - I) + (L/R) = ((La/R)L/R)(1 - (La/R)) + (L/R) = (aL^2/R^2)(1 - (La/R)) + (L/R) where a is the arrival rate of packets to the switch (in 
+other words just packets/second)
+
+P15:
+you would just replace R in the previous question with mu*L which would just end up as...
+
+(aL^2/R^2)(1 - (La/R)) + (L/R) = (a/mu^2)(1 - (a/mu)) + (1/mu)
+
+P16:
+we need to find a in the formula N = ad
+
+N = 100 packets which is mentioned in the question
+
+d is the total delay for a packet (so just queuing plus transmission delay), queuing delay is said to be 20ms and the transmission rate is 100 packets/sec so we get
+1/100 sec/packet = 0.01s = 10ms so we end up with d = 30ms = 0.03s
+
+so we end up with N = ad => a = N / d = 100 / 0.03 = 3333.33333333 packets / second is our arrival rate
+
+P17:
+just add an i as a superscript and get rid of the N and put it in a summation
+
+P18:
+this is to much of a pain to do for now since i don't even know any servers that are running the traceroute program on the same continent, maybe i can get back to it
+
+P19:
+if there are n users in a network and each user sends a message to all other users the amount of messages sent would be (n - 1)*n = n^2 - n which is close Metcalfe’s law
+since they are both O(n^2) or in other word on the order of n^2, so i would say my answer does support Metcalfe’s law
+
+P20:
+min(R_s, R_c, R / M) where this is assuming that the client and server pairs share the transmission rate of the single shared link equally, this equation says that whichever
+link has the lowest transmission rate acts as a bottleneck for the other transmission rates aka limits how fast the data can be sent from the server to the client
+
+P21:
+if the server can only use one path the maximum throughput that can be achieved is max(min(i, R_i^1), ..., min(i, R_i^M)) where min(i, R_i^k) is just the i value that minimizes 
+R_i^k for a path k and max(min(i, R_i^1), ..., min(i, R_i^M)) just takes the max of the minimum transmission rate of these paths which will be around the max throughput we can
+achieve by using only 1 path, if we're allowed to use all paths this becomes a summation and we get summ(k, 1->M, min(i, R_i^k))
+
+P22:
+The probability that a packet sent from the server to the client will successfully make it is is (1-p)^N since the probability of there not being packet loss is 1-p and there
+are N links to go through. By the Geometric distribution the mean amount of attempts would be 1 / (1-p)^N.
+
+P23:
+
+a: R_s being the bottleneck link implies that R_c > R_s, so this means by the time the second packet is done transmitting on the R_s link and has arrived for transmitting on
+the R_c link the first packet will have already finished transmitting on the R_c link and its bits are all either at the client or still on the R_c link, this means there
+will be no queuing delay for the second packet so we don't have to add that to our calculations. Then doing straightforward calculations for end-to-end delay (i will ignore
+queuing delay here but it can easily be added in) we get for packet 1 a time of (L/R_s + L/R_c + 2*d_prop) and for the second packet a time of (2*L/R_s + L/R_c + 2*d_prop)
+where the extra 2 comes from the time it takes to wait for the first packet to finish transmitting (so the second value is not end-to-end delay). Subtracting the 2 we end up
+with L/R_s as our final answer.
+
+b: Yes, since the client link acts as a bottlecap it is possible that R_c <<<< R_s so that means that after the second packet finishes transmitting it is possible that
+the first one is still transmitting at the client link since again R_c <<<< R_s. We would need the second packet to wait T = L/R_c - (L/R_s + d_prop) seconds, waiting this
+long means that there will be (L/R_s + d_prop) seconds left for the first packet to finish transmitting on R_c and this is also the amount of time it takes for the last bit
+of the second packet to reach the switch (if L/R_c - (L/R_s + d_prop) < 0 then just wait L/R_c - (L/R_s + i) for largest i < d_prop such that its minimized and > 0)
+
+P24:
+First lets calculate how long it would take to transmit this data with that 100mbps link, lets translate this to normal bits first...
+
+100mbps = 100,000,000bps
+
+50tb = 50,000,000,000,000b
+
+calculating the time we get 50,000,000,000,000b/100,000,000bps = 500,000s which is 5 days, 18 hours, 53 minutes, and 20 seconds, so if this takes less time then the truck
+option then sure, if not it would be better to go with this option (the truck option is probably faster but i don't live in the US so i have no idea)
+
+P25:
+
+a: R*d_prop = 5,000,000 * (20,000,000 / 2.5*10^8) = 5000000*(2/25) = 400,000
+
+b: 400,000 since during a we calculated the amount of bits that will be put on the link during the traveling of a single bit, and since the size of the file does not bottlecap
+this value we have 400,000
+
+c: its the amount of bits that will be put onto the link during the amount of time it takes for a single bit to travel the link from the start to finish (aka this can be
+interpretted aswell as the amount of bits that can be on the link at one time)
+
+d: so we can have 400,000 bits on a link at a time, the link is 20,000km = 20,000,000m long, so we have 20,000,000/400,000 = 50m per bit which would mean 100m for the "width"
+of the bit which i think i bigger than a football field
+
+e: would be 2m/(R*d_prop) = 2m/(R*(m/s)) = 2s/R
+
+P26:
+I am assuming they mean P25 here since no value for the length of the link is specified in P24, we calculated the formula for the width of a bit to be 2s/R, now we need to
+find R where 2s/R = m <=> 2*2.5*10^8/R = 20,000,000 <=> R = 5*10^8/20000000 <=> R = 5*10^8/(2*10^7) = 50/2 = 25bps is the transmission time for the width of a bit to be
+the length of the link
+
+P27:
+
+a: R*d_prop = 500,000,000 * (20,000,000 / 2.5*10^8) = 500000000*(2/25) = 40,000,000
+
+b: 800,000 since unlike the last time the amount of bits in the packet acts as a bottle cap since 40,000,000 is the maximum amount of bits we can have on the link
+at a time
+
+c: 2s/R = 2*2.5*10^8/500000000 = 5/5 = 1m is the width of each bit
+
+28:
+
+a: it would take 800000 / 5000000 = 0.16s = 160ms to fully transmit the packet and the end to end delay would be 0.16 + 20000000/(2.5*10^8) = 0.16 + 0.08 = 0.24s = 240ms
+
+b: would be 20*(40000/5000000 + 20000000/(2.5*10^8)) = 1.76s and this is assuming the acknowledgment packet's propogation time is negligible aswell, if its not just add
+0.24*19 = 4.56s to that value (this is probably correct so we get 1.76s + 4.56s = 6.32s)
+
+c: comparing them we get 6.32 / 0.24 = 26.3333333333 so part b takes over 26 times the amount of seconds as part a
+
+29:
+
+a: since it is a geostationary satellite lets just say the satellite is 36,000km away from the base station (geostationary satellites are said in the textbook to be orbitting
+at 36,000km above the earths surface so this is assuming that this satellite was launched directly above the base station), then the propogation delay would be...
+
+36,000,000 / (2.4*10^8) = 36 / 240 = 0.15s is our propogation delay
+
+b: R*d_prop = 10,000,000*0.15 = 1,500,000
+
+c: so the satellite sends a picture every minute so we need the satellite to finish transmitting a picture in a second, so we have...
+
+x/10000000 = 60 => x = 60*10000000 = 600,000,000 bits
+
+30:
+An example i can think of on the top of my head is on the baggage check they may add a tag on your baggage so it is easily identifies the owner and once we get to the baggage
+layer (for claiming) we use the tag/header to help make sure the baggage is ours, maybe on our ticket there is extra information on it that gives us information that we need
+at the complain ticket layer to get a refund if our flight was bad, for example date of purchase maybe?
+
+31:
+
+a: To move the whole message from source to the first packet switch it would take 10^6/(5*10^6) = 1/5 = 0.2s, since we are using store and forward and the whole message
+is in 1 packet we have to do this for all links so we have for a final time from source to destination being 3*0.2 = 0.6s (they say the message is 10^6 bits but this probably
+does not include header sizes in other layers of the protocal stack since message implies application layer packet so the time might be a little longer)
+
+b: The first packet will be recieved by the first switch at time 10,000/(5*10^6) = 0.002s, the second packet will start transmitting after the first packet is recieved and
+will take the same amount of time to be sent to the first switch, so the second packet will be recieved by the first switch at time 0.004s
+
+c: we just need to calculate when the last bit of the last packet will arrive at the destination, the source will finish transmitting all the packets at time 100*0.002s = 0.2s
+since it needs to transmit 100 packets and each take 0.002s, the last packet will be finished transmitting from the first and second packet switch in 0.002s aswell since they
+all have the same transmission rate, so we have for a final time 0.2s + 0.002s + 0.002s = 0.204s which is much shorter then the no segmentation version in part a since segmentation
+allows pipelining of data (very similar to the piplining of binary instructions that take place in some computers like in RISC architectures for example)
+
+d: one reason is that if we don't it can result in the packet being to large for a link queue, so if there is another message already being queued on a link we want to use
+and our packet is to large because we don't use message segmentation this packet will just be dropped
+
+e: so one reason is that it adds to the amount of data we have to send, each time we segment a message from the application layer we have to add header information from
+the transport and network layer so overall this gives us more data we have to send
+
+P32:
+The delays do corrospond with the delays in the previous question, when i set the message size to 16 and the packet size to 4 i get a delay of 6, but when i do the same thing
+but set the packet size to 16 (aka no segmentation) i get double the delay (that being 12). Adding propogation just increases the delay by a constant amount (aka it just
+increments it) since the total delay is just equivalent to how long it takes for the last bit of the last packet to travel to the destination, and adding propogation delay
+is just the same as adding a constant to this number (in the case of the animation having propogation delay for all links adds a total of 3 to the end time, so that means
+1 unit of time for each rectangle to travel the link)
+
+P33:
+file size = F bits
+packet size = 80 + S bits (80 is header bits and S is the message segmentation)
+transmission rate = R bps
+we ignore propogation, queuing, and processing delay in this problem, find S that minimizes end-to-end delay
+
+end-to-end delay = (F / S)*(80 + S)/R + 2*(80 + S)/R = ((F/S) + 2)(80 + S)/R = (1/R)(80F/S + F + 160 + 2S)
+
+This is assuming F is divisable by S
+
+P34:
+just convert your voice into normal bits on wire and send it to the telephone network the reciever is on via the internet, if the telephone network supports DSL just use
+that telephone company's access point to the internet to get into their network, from their the telephone network does the rest.
+
+
+Wireshark lab 1:
+
+1:
+TCP, TLSv1.2 (encryption of the application layer so not really a protocal but it appears), and HTTP
+
+2:
+i sent the get request at time 0.625102s and i got a response with the html file at 0.715005s so it took a total of 0.715005s - 0.625102s = 0.08990300s = 89.90300ms to recieve
+the html file after sending the initial get request (using the time of day as a measurement of time instead i made the get request at 2024-07-29 01:11:40.166218 and i recieved
+the response at 2024-07-29 01:11:40.256121)
+
+3:
+the ipv4 address of gaia.cs.umass.edu is 128.119.245.12 and my private ipv4 address is 192.168.1.13
+
+4:
+i am not printing it out
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DSL: 

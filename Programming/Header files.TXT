@@ -1,0 +1,11 @@
+Header files in C and other C languages are not really a necessary existence, they are just a way to help organize code and make everything look and feel nicer, these notes
+will go over the uses of header files and will help me organize my thoughts about them
+
+.Header files are very useful when creating shared libraries that will be used by multiple programs, so when a certain program needs to use functions from this shared library
+all thats necessary to declare them is using that shared library's respective header file, the header file can also be used for type definition that are used in the shared
+library and storing all the shared library header inclusions and acting as documentation for the functions in said library which is especially useful if the source code in
+the shared library is encapsulated
+
+.Related to above point but creating a header file for a source file allows portability of the code in the source file
+
+.Can be used when multiple source files are sharing certain data type definitions, global variables, and also maybe function prototypes if you want to really reach
